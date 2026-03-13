@@ -249,6 +249,18 @@ aside::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2p
       <span class="cat-num" style="font-size:14px">⊕</span>
       <span class="cat-label">15 Best Practices</span>
     </a>
+    <a class="nav-item" href="#whywhathowhwen" onclick="setActive(this)">
+      <span class="cat-num" style="font-size:14px">?</span>
+      <span class="cat-label">Why / What / How / When</span>
+    </a>
+    <a class="nav-item" href="#implementation" onclick="setActive(this)">
+      <span class="cat-num" style="font-size:14px">></span>
+      <span class="cat-label">Hands-On Steps</span>
+    </a>
+    <a class="nav-item" href="#resources" onclick="setActive(this)">
+      <span class="cat-num" style="font-size:14px">@</span>
+      <span class="cat-label">Resources &amp; Links</span>
+    </a>
   </nav>
   <div class="sidebar-footer">AgentForge v1.0 · March 2025 · MIT License</div>
 </aside>
@@ -933,21 +945,209 @@ aside::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2p
     <div class="section-rule"></div>
   </div>
   <div class="bp-grid">
-    <div class="bp-item"><div class="bp-item-num">01</div><div class="bp-item-title">Model Selection</div><div class="bp-item-body">Smallest capable model. Benchmark before production.</div></div>
-    <div class="bp-item"><div class="bp-item-num">02</div><div class="bp-item-title">Prompt Engineering</div><div class="bp-item-body">System roles, few-shot examples, chain-of-thought.</div></div>
-    <div class="bp-item"><div class="bp-item-num">03</div><div class="bp-item-title">RAG Architecture</div><div class="bp-item-body">Hybrid search, 512-token chunks, re-ranking.</div></div>
-    <div class="bp-item"><div class="bp-item-num">04</div><div class="bp-item-title">Memory Management</div><div class="bp-item-body">Three tiers: STM ring, DynamoDB LTM, vector.</div></div>
-    <div class="bp-item"><div class="bp-item-num">05</div><div class="bp-item-title">Tool Design</div><div class="bp-item-body">Typed schemas, output validation, loop guards.</div></div>
-    <div class="bp-item"><div class="bp-item-num">06</div><div class="bp-item-title">Evaluation</div><div class="bp-item-body">RAGAS metrics, ground-truth sets, drift alerts.</div></div>
-    <div class="bp-item"><div class="bp-item-num">07</div><div class="bp-item-title">Safety Guardrails</div><div class="bp-item-body">PII redaction, content filters, prompt injection.</div></div>
-    <div class="bp-item"><div class="bp-item-num">08</div><div class="bp-item-title">Cost Optimization</div><div class="bp-item-body">Caching, token budgets, PAY_PER_REQUEST.</div></div>
-    <div class="bp-item"><div class="bp-item-num">09</div><div class="bp-item-title">Latency</div><div class="bp-item-body">Streaming, async, embedding cache, warm starts.</div></div>
-    <div class="bp-item"><div class="bp-item-num">10</div><div class="bp-item-title">Observability</div><div class="bp-item-body">Structured JSON logs, X-Ray traces, alarms.</div></div>
-    <div class="bp-item"><div class="bp-item-num">11</div><div class="bp-item-title">Security</div><div class="bp-item-body">KMS CMK, VPC endpoints, CloudTrail, least-priv.</div></div>
-    <div class="bp-item"><div class="bp-item-num">12</div><div class="bp-item-title">Scalable Deployment</div><div class="bp-item-body">Terraform modules, multi-AZ, auto-scaling.</div></div>
-    <div class="bp-item"><div class="bp-item-num">13</div><div class="bp-item-title">Responsible AI</div><div class="bp-item-body">Bias testing, explainability, compliance audit.</div></div>
-    <div class="bp-item"><div class="bp-item-num">14</div><div class="bp-item-title">Data Management</div><div class="bp-item-body">PITR, versioning, TTL, data lineage tracking.</div></div>
-    <div class="bp-item"><div class="bp-item-num">15</div><div class="bp-item-title">Human-in-the-Loop</div><div class="bp-item-body">Priority escalation, approval gates, feedback.</div></div>
+    <div class="bp-item"><div class="bp-item-num">01</div><div class="bp-item-title">Model Selection</div><div class="bp-item-body">Always benchmark candidate models against your specific use case before production. Start with the smallest capable model — e.g., Claude Haiku or GPT-4o-mini for classification tasks, larger models only when quality demands it. Track cost-per-invocation across models using a standard evaluation harness. Document model selection rationale and re-evaluate quarterly as new models release.</div></div>
+    <div class="bp-item"><div class="bp-item-num">02</div><div class="bp-item-title">Prompt Engineering</div><div class="bp-item-body">Structure every prompt with explicit system roles, task boundaries, and output format constraints. Use few-shot examples (3-5) for consistent formatting. Apply chain-of-thought reasoning for multi-step tasks. Version-control your prompts alongside code — prompt drift causes silent regressions. Test prompts against adversarial inputs and edge cases before deployment.</div></div>
+    <div class="bp-item"><div class="bp-item-num">03</div><div class="bp-item-title">RAG Architecture</div><div class="bp-item-body">Use hybrid search combining dense vector retrieval (FAISS, OpenSearch) with sparse keyword search (BM25) for best recall. Chunk documents at 512 tokens with 50-token overlap to preserve context boundaries. Apply a cross-encoder re-ranker (e.g., ms-marco-MiniLM) on retrieved chunks before feeding to the LLM. Monitor retrieval relevance with NDCG@10 and adjust chunk strategy based on document types.</div></div>
+    <div class="bp-item"><div class="bp-item-num">04</div><div class="bp-item-title">Memory Management</div><div class="bp-item-body">Implement three memory tiers: (1) Short-term memory — a sliding window or ring buffer of recent messages for conversation continuity; (2) Long-term memory — DynamoDB or AgentCore Memory Store for persistent facts, user preferences, and cross-session context; (3) Semantic memory — vector-indexed memories for relevance-based retrieval. Apply TTL policies to prevent unbounded growth. Use namespace isolation per user and session.</div></div>
+    <div class="bp-item"><div class="bp-item-num">05</div><div class="bp-item-title">Tool Design</div><div class="bp-item-body">Define every tool with typed JSON Schema parameters and clear docstrings — the LLM uses these to decide when and how to call tools. Validate tool outputs before returning to the agent loop. Implement loop guards (max 10 iterations) to prevent infinite tool-calling cycles. Keep tools atomic and composable — one tool, one responsibility. Log every tool invocation with input/output for debugging.</div></div>
+    <div class="bp-item"><div class="bp-item-num">06</div><div class="bp-item-title">Evaluation</div><div class="bp-item-body">Build a ground-truth dataset of at least 50 question-answer pairs for your domain. Use RAGAS metrics (faithfulness, answer relevance, context precision, context recall) for RAG pipelines. Run evaluations on every prompt template change and model update. Set up drift alerts — if faithfulness drops below 0.8, trigger a review. Automate evaluation in CI/CD with pass/fail thresholds.</div></div>
+    <div class="bp-item"><div class="bp-item-num">07</div><div class="bp-item-title">Safety Guardrails</div><div class="bp-item-body">Deploy input guardrails: detect and redact PII (names, emails, SSNs) before sending to the LLM. Apply content filters on both input and output — block harmful, toxic, or off-topic content. Implement prompt injection detection using pattern matching and classifier models. Use Bedrock Guardrails or custom Lambda filters. Log all blocked requests for security review. Test with red-team prompts monthly.</div></div>
+    <div class="bp-item"><div class="bp-item-num">08</div><div class="bp-item-title">Cost Optimization</div><div class="bp-item-body">Cache frequent queries and their responses (semantic cache with similarity threshold). Set per-request token budgets — truncate context rather than exceeding limits. Use DynamoDB PAY_PER_REQUEST billing for unpredictable workloads, provisioned capacity for steady-state. Batch embedding requests where possible. Track cost per conversation and per tool call. Set CloudWatch billing alarms at 80% of monthly budget.</div></div>
+    <div class="bp-item"><div class="bp-item-num">09</div><div class="bp-item-title">Latency</div><div class="bp-item-body">Enable streaming responses for user-facing agents — perceived latency drops dramatically. Use async I/O for parallel tool calls when tools are independent. Cache embeddings for frequently queried documents. Keep Lambda functions warm with provisioned concurrency for sub-second cold starts. Profile your agent loop: target &lt;2s for simple queries, &lt;8s for multi-tool chains. Pre-compute embeddings at ingestion time, not query time.</div></div>
+    <div class="bp-item"><div class="bp-item-num">10</div><div class="bp-item-title">Observability</div><div class="bp-item-body">Emit structured JSON logs on every event: invocation start, tool call, memory read/write, LLM request/response, and cost. Instrument with AWS X-Ray for distributed tracing across Lambda, DynamoDB, and Bedrock calls. Set CloudWatch alarms on error rate (&gt;1%), p99 latency (&gt;10s), and cost anomalies. Build dashboards showing invocations/day, tool usage distribution, and token consumption trends. If it isn't logged, it doesn't exist in production.</div></div>
+    <div class="bp-item"><div class="bp-item-num">11</div><div class="bp-item-title">Security</div><div class="bp-item-body">Encrypt all data at rest with KMS customer-managed keys (CMK). Use VPC endpoints for Bedrock, DynamoDB, and S3 — no traffic over the public internet. Enable CloudTrail for API audit logging. Apply least-privilege IAM policies — each Lambda gets only the permissions it needs. Rotate API keys and secrets via Secrets Manager with automatic rotation. Scan dependencies for CVEs in CI/CD. Review IAM policies quarterly.</div></div>
+    <div class="bp-item"><div class="bp-item-num">12</div><div class="bp-item-title">Scalable Deployment</div><div class="bp-item-body">Use Terraform modules with separate network, security, and application layers. Deploy across multiple Availability Zones for resilience. Configure auto-scaling based on invocation concurrency, not CPU. Use blue-green or canary deployments for zero-downtime updates. Pin model versions in production — never auto-upgrade. Store Terraform state in S3 with DynamoDB locking. Tag all resources with cost-center, environment, and owner.</div></div>
+    <div class="bp-item"><div class="bp-item-num">13</div><div class="bp-item-title">Responsible AI</div><div class="bp-item-body">Test for bias across demographic groups using fairness metrics (equalized odds, demographic parity). Provide explainability — log the reasoning chain and retrieved context for every response. Maintain a model card documenting intended use, limitations, and known biases. Conduct compliance audits against your organization's AI governance framework. Enable user feedback mechanisms and review flagged responses weekly.</div></div>
+    <div class="bp-item"><div class="bp-item-num">14</div><div class="bp-item-title">Data Management</div><div class="bp-item-body">Enable Point-in-Time Recovery (PITR) on all DynamoDB tables. Version your knowledge base documents in S3 with bucket versioning. Apply TTL on conversation records (e.g., 90 days for chat history, indefinite for user preferences). Implement data lineage tracking — know exactly which document chunks contributed to each response. Use S3 Lifecycle policies to transition old data to Glacier. Document your data retention policy and enforce it in code.</div></div>
+    <div class="bp-item"><div class="bp-item-num">15</div><div class="bp-item-title">Human-in-the-Loop</div><div class="bp-item-body">Define escalation tiers: confidence &lt;0.7 triggers soft escalation (flag for review), confidence &lt;0.4 triggers hard escalation (route to human immediately). Implement approval gates for high-stakes actions — financial transactions, account changes, data deletion. Build a feedback loop: humans rate agent responses, ratings feed back into evaluation datasets. Track escalation rate as a key metric — aim for &lt;5% in steady state.</div></div>
+  </div>
+</div>
+
+<!-- ════ WHY / WHAT / HOW / WHEN ════ -->
+<div id="whywhathowhwen" class="bp-section" style="margin-top:0">
+  <div class="section-header" style="padding:0 0 24px 0;border-top:none">
+    <div class="section-title">WHY / WHAT / HOW / WHEN</div>
+    <div class="section-rule"></div>
+    <div class="section-count">CRITICAL USE CASES FOR AI AGENTS IN PRODUCTION</div>
+  </div>
+  <div class="bp-grid" style="grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:20px">
+
+    <div class="bp-item" style="padding:20px">
+      <div class="bp-item-num" style="color:var(--accent);font-size:22px">WHY</div>
+      <div class="bp-item-title" style="font-size:13px;margin:10px 0 6px">Why AI Agents Are Critically Needed</div>
+      <div class="bp-item-body" style="line-height:1.7">
+        <strong>Enterprise complexity exceeds human bandwidth.</strong> Modern organizations handle thousands of customer queries, security events, data pipelines, and operational tasks simultaneously. Rule-based automation breaks at scale because real-world inputs are messy, ambiguous, and context-dependent.<br><br>
+        <strong>LLMs alone are not enough.</strong> A language model can generate text but cannot take action — it cannot query a database, file a ticket, trigger a deployment, or remember a previous conversation. Agents bridge this gap by combining LLM reasoning with tool use, memory, and autonomous decision-making.<br><br>
+        <strong>The cost of inaction is measurable.</strong> Manual triage of security alerts takes 30-45 minutes per incident. Customer support without intelligent routing leads to 3-5x longer resolution times. Data teams spend 60% of their time on repetitive query reformulation. AI agents eliminate these bottlenecks by reasoning about context and acting autonomously within defined guardrails.
+      </div>
+    </div>
+
+    <div class="bp-item" style="padding:20px">
+      <div class="bp-item-num" style="color:var(--aws);font-size:22px">WHAT</div>
+      <div class="bp-item-title" style="font-size:13px;margin:10px 0 6px">What AI Agents Actually Do</div>
+      <div class="bp-item-body" style="line-height:1.7">
+        <strong>Conversational Assistants</strong> — Handle customer inquiries with context-aware responses, escalating to humans only when confidence is low. Reduce support ticket volume by 40-60%.<br><br>
+        <strong>Autonomous Task Agents</strong> — Execute multi-step workflows: classify documents, extract metadata, route to the correct system, and verify completion. Replace brittle ETL pipelines with adaptive reasoning.<br><br>
+        <strong>Security &amp; Compliance Agents</strong> — Monitor GuardDuty findings, correlate with CloudTrail logs, assess severity, and trigger automated remediation playbooks. Response time drops from hours to seconds.<br><br>
+        <strong>Data &amp; Analytics Agents</strong> — Translate natural language questions into SQL/API queries, retrieve results, generate visualizations, and narrate insights. Democratize data access across the organization.<br><br>
+        <strong>DevOps &amp; SRE Agents</strong> — Scan code for vulnerabilities, generate patches, create PRs, monitor deployments, and auto-remediate infrastructure drift. Shift security left without slowing development.
+      </div>
+    </div>
+
+    <div class="bp-item" style="padding:20px">
+      <div class="bp-item-num" style="color:var(--gcp);font-size:22px">HOW</div>
+      <div class="bp-item-title" style="font-size:13px;margin:10px 0 6px">How to Build Production-Grade Agents</div>
+      <div class="bp-item-body" style="line-height:1.7">
+        <strong>1. Define the agent's scope.</strong> An agent that tries to do everything does nothing well. Start with one high-value workflow — e.g., "answer FAQ questions from our knowledge base."<br><br>
+        <strong>2. Build the reasoning core.</strong> Use a ReAct loop (Reason → Act → Observe) powered by LangGraph or a similar framework. The agent decides which tool to call based on the user's intent and accumulated context.<br><br>
+        <strong>3. Design typed tools.</strong> Each tool is a function with a JSON Schema interface. Tools are atomic (one action each), validated (check outputs before returning), and guarded (max iteration limits prevent infinite loops).<br><br>
+        <strong>4. Add retrieval (RAG).</strong> Embed your knowledge base into a vector store (FAISS, OpenSearch, Pinecone). The agent retrieves relevant context before generating a response — grounding it in facts, not hallucinations.<br><br>
+        <strong>5. Integrate memory.</strong> Use AgentCore Memory for session persistence (checkpointer) and cross-session knowledge (store). Middleware hooks inject context before the LLM and save responses after.<br><br>
+        <strong>6. Deploy with guardrails.</strong> Wrap the agent in AgentCore Runtime for managed scaling, observability, and safety. Add input/output filters, cost budgets, and human escalation thresholds.
+      </div>
+    </div>
+
+    <div class="bp-item" style="padding:20px">
+      <div class="bp-item-num" style="color:var(--oss);font-size:22px">WHEN</div>
+      <div class="bp-item-title" style="font-size:13px;margin:10px 0 6px">When to Deploy AI Agents (and When Not To)</div>
+      <div class="bp-item-body" style="line-height:1.7">
+        <strong>Deploy agents when:</strong><br>
+        &#x2713; The task requires reasoning over unstructured inputs (natural language, documents, images)<br>
+        &#x2713; The workflow involves multiple conditional steps that change based on context<br>
+        &#x2713; Human experts spend &gt;30% of their time on repetitive triage, classification, or routing<br>
+        &#x2713; The domain has a well-defined knowledge base that can ground the agent's responses<br>
+        &#x2713; You can define clear success metrics (accuracy, resolution time, escalation rate)<br>
+        &#x2713; There is a human-in-the-loop fallback for high-stakes decisions<br><br>
+        <strong>Do NOT deploy agents when:</strong><br>
+        &#x2717; A simple rule or regex can solve the problem reliably (don't over-engineer)<br>
+        &#x2717; The task requires guaranteed deterministic output (use traditional code instead)<br>
+        &#x2717; There is no ground-truth dataset to evaluate quality<br>
+        &#x2717; The cost of a wrong answer exceeds the cost of human processing<br>
+        &#x2717; Regulatory requirements prohibit automated decision-making in the domain<br>
+        &#x2717; You lack observability infrastructure to monitor agent behavior in production
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════ HANDS-ON IMPLEMENTATION ════ -->
+<div id="implementation" class="method-section" style="margin-top:0">
+  <div class="section-header" style="border-top:none;padding:0 0 0 0;margin-bottom:0">
+    <div class="section-title" style="color:rgba(255,255,255,.9)">HANDS-ON IMPLEMENTATION</div>
+    <div class="section-rule" style="background:rgba(255,255,255,.1)"></div>
+    <div class="section-count" style="color:rgba(255,255,255,.3)">STEP-BY-STEP QUICK START</div>
+  </div>
+  <div class="method-grid">
+    <div class="method-item">
+      <div class="method-icon">01</div>
+      <div class="method-title">Environment Setup</div>
+      <div class="method-body">Install Python 3.13+, uv package manager, and AWS CLI v2. Configure AWS credentials with <code>aws configure</code>. Clone the repository and run <code>uv sync</code> to install all dependencies. Create a <code>.env</code> file with your GROQ_API_KEY and optional HF_API_KEY.</div>
+    </div>
+    <div class="method-item">
+      <div class="method-icon">02</div>
+      <div class="method-title">Run Locally First</div>
+      <div class="method-body">Start with <code>python 00_langgraph_agent.py</code> to validate your environment. This runs the LangGraph agent locally with FAISS vector search over the FAQ dataset. Verify you get a coherent response about "roaming activation" before proceeding to cloud deployment.</div>
+    </div>
+    <div class="method-item">
+      <div class="method-icon">03</div>
+      <div class="method-title">Configure AgentCore</div>
+      <div class="method-body">Run <code>agentcore configure -e 01_agentcore_runtime.py</code> to auto-generate <code>bedrock_agentcore.yaml</code>. This YAML defines your entrypoint handler, tool schemas, and runtime settings. Review the generated config — understand what each field controls before launching.</div>
+    </div>
+    <div class="method-item">
+      <div class="method-icon">04</div>
+      <div class="method-title">Deploy &amp; Invoke</div>
+      <div class="method-body">Launch with <code>agentcore launch --env GROQ_API_KEY=your_key</code>. Test with <code>agentcore invoke '{"prompt": "..."}'</code>. Try different queries to exercise all three tools: search_faq, search_detailed_faq, and reformulate_query. Observe the ReAct reasoning chain in the logs.</div>
+    </div>
+    <div class="method-item">
+      <div class="method-icon">05</div>
+      <div class="method-title">Add Memory</div>
+      <div class="method-body">Switch to <code>02_agentcore_memory.py</code> — configure and deploy as before. Test session continuity by sending multiple messages with the same <code>actor_id</code> and <code>thread_id</code>. Verify the agent remembers context from earlier in the conversation. Test cross-session preference retrieval with a new thread_id.</div>
+    </div>
+    <div class="method-item">
+      <div class="method-icon">06</div>
+      <div class="method-title">Extend &amp; Customize</div>
+      <div class="method-body">Add your own tools (API calls, database queries, calculations). Swap the Lauki FAQ dataset with your own domain knowledge base. Experiment with different embedding models and chunk sizes. Modify the system prompt to match your use case. Build evaluation datasets and measure quality with RAGAS metrics.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ RESOURCES ════ -->
+<div id="resources" class="bp-section" style="margin-top:0">
+  <div class="section-header" style="padding:0 0 24px 0;border-top:none">
+    <div class="section-title">RESOURCES &amp; REFERENCE LINKS</div>
+    <div class="section-rule"></div>
+  </div>
+  <div class="bp-grid" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr))">
+    <div class="bp-item">
+      <div class="bp-item-num" style="color:var(--aws)">AWS</div>
+      <div class="bp-item-title">AWS Documentation &amp; Guides</div>
+      <div class="bp-item-body">
+        <a href="https://aws.amazon.com/bedrock/agentcore/" target="_blank" style="color:var(--aws);text-decoration:underline">Amazon Bedrock AgentCore</a> — Product overview and features<br>
+        <a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agentcore-get-started-toolkit.html" target="_blank" style="color:var(--aws);text-decoration:underline">AgentCore Developer Guide</a> — Official toolkit documentation<br>
+        <a href="https://github.com/awslabs/amazon-bedrock-agentcore-samples" target="_blank" style="color:var(--aws);text-decoration:underline">AgentCore Code Samples</a> — Official AWS sample repository<br>
+        <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/" target="_blank" style="color:var(--aws);text-decoration:underline">Amazon Bedrock User Guide</a> — Foundation models and APIs<br>
+        <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base.html" target="_blank" style="color:var(--aws);text-decoration:underline">Bedrock Knowledge Bases</a> — Managed RAG service<br>
+        <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails.html" target="_blank" style="color:var(--aws);text-decoration:underline">Bedrock Guardrails</a> — Content filtering and safety
+      </div>
+    </div>
+    <div class="bp-item">
+      <div class="bp-item-num" style="color:var(--azure)">AZ</div>
+      <div class="bp-item-title">Azure AI &amp; Agent Resources</div>
+      <div class="bp-item-body">
+        <a href="https://learn.microsoft.com/en-us/azure/ai-services/openai/" target="_blank" style="color:var(--azure);text-decoration:underline">Azure OpenAI Service</a> — GPT and embedding model hosting<br>
+        <a href="https://learn.microsoft.com/en-us/azure/search/" target="_blank" style="color:var(--azure);text-decoration:underline">Azure AI Search</a> — Vector and hybrid search service<br>
+        <a href="https://learn.microsoft.com/en-us/azure/ai-studio/" target="_blank" style="color:var(--azure);text-decoration:underline">Azure AI Foundry</a> — End-to-end AI development platform<br>
+        <a href="https://learn.microsoft.com/en-us/semantic-kernel/overview/" target="_blank" style="color:var(--azure);text-decoration:underline">Semantic Kernel</a> — Microsoft's AI orchestration SDK<br>
+        <a href="https://learn.microsoft.com/en-us/azure/cosmos-db/" target="_blank" style="color:var(--azure);text-decoration:underline">Azure Cosmos DB</a> — Multi-model database for agent memory
+      </div>
+    </div>
+    <div class="bp-item">
+      <div class="bp-item-num" style="color:var(--gcp)">GCP</div>
+      <div class="bp-item-title">Google Cloud AI Resources</div>
+      <div class="bp-item-body">
+        <a href="https://cloud.google.com/vertex-ai/docs" target="_blank" style="color:var(--gcp);text-decoration:underline">Vertex AI Documentation</a> — Google's ML and AI platform<br>
+        <a href="https://cloud.google.com/vertex-ai/generative-ai/docs/agent-builder/overview" target="_blank" style="color:var(--gcp);text-decoration:underline">Vertex AI Agent Builder</a> — Build and deploy AI agents<br>
+        <a href="https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/gemini" target="_blank" style="color:var(--gcp);text-decoration:underline">Gemini API Reference</a> — Google's multimodal AI models<br>
+        <a href="https://cloud.google.com/bigquery/docs" target="_blank" style="color:var(--gcp);text-decoration:underline">BigQuery Documentation</a> — Analytics and data warehouse<br>
+        <a href="https://cloud.google.com/firestore/docs" target="_blank" style="color:var(--gcp);text-decoration:underline">Firestore Documentation</a> — Serverless document database
+      </div>
+    </div>
+    <div class="bp-item">
+      <div class="bp-item-num" style="color:var(--oss)">FW</div>
+      <div class="bp-item-title">Frameworks &amp; Libraries</div>
+      <div class="bp-item-body">
+        <a href="https://langchain-ai.github.io/langgraph/" target="_blank" style="color:var(--oss);text-decoration:underline">LangGraph</a> — Graph-based agent orchestration framework<br>
+        <a href="https://python.langchain.com/" target="_blank" style="color:var(--oss);text-decoration:underline">LangChain</a> — LLM application development framework<br>
+        <a href="https://docs.crewai.com/" target="_blank" style="color:var(--oss);text-decoration:underline">CrewAI</a> — Multi-agent role-playing framework<br>
+        <a href="https://microsoft.github.io/autogen/" target="_blank" style="color:var(--oss);text-decoration:underline">AutoGen</a> — Microsoft's multi-agent conversation framework<br>
+        <a href="https://faiss.ai/" target="_blank" style="color:var(--oss);text-decoration:underline">FAISS</a> — Facebook's efficient similarity search library<br>
+        <a href="https://www.sbert.net/" target="_blank" style="color:var(--oss);text-decoration:underline">Sentence Transformers</a> — State-of-the-art text embedding models<br>
+        <a href="https://console.groq.com/docs" target="_blank" style="color:var(--oss);text-decoration:underline">Groq API Docs</a> — Ultra-fast LLM inference platform
+      </div>
+    </div>
+    <div class="bp-item">
+      <div class="bp-item-num" style="color:var(--gold)">IaC</div>
+      <div class="bp-item-title">Infrastructure &amp; DevOps</div>
+      <div class="bp-item-body">
+        <a href="https://developer.hashicorp.com/terraform/docs" target="_blank" style="color:var(--gold);text-decoration:underline">Terraform Documentation</a> — Infrastructure as Code<br>
+        <a href="https://docs.docker.com/" target="_blank" style="color:var(--gold);text-decoration:underline">Docker Documentation</a> — Containerisation platform<br>
+        <a href="https://docs.github.com/en/actions" target="_blank" style="color:var(--gold);text-decoration:underline">GitHub Actions</a> — CI/CD workflow automation<br>
+        <a href="https://docs.aws.amazon.com/xray/" target="_blank" style="color:var(--gold);text-decoration:underline">AWS X-Ray</a> — Distributed tracing and observability<br>
+        <a href="https://docs.astral.sh/uv/" target="_blank" style="color:var(--gold);text-decoration:underline">uv Package Manager</a> — Ultra-fast Python dependency management
+      </div>
+    </div>
+    <div class="bp-item">
+      <div class="bp-item-num" style="color:var(--accent)">EDU</div>
+      <div class="bp-item-title">Learning &amp; Community</div>
+      <div class="bp-item-body">
+        <a href="https://aws.amazon.com/bedrock/agentcore/" target="_blank" style="color:var(--accent);text-decoration:underline">Build With AgentCore Challenge</a> — AWS community challenge<br>
+        <a href="https://github.com/kogunlowo123/agentforge-portal" target="_blank" style="color:var(--accent);text-decoration:underline">AgentForge GitHub Repository</a> — Source code and examples<br>
+        <a href="https://docs.ragas.io/" target="_blank" style="color:var(--accent);text-decoration:underline">RAGAS Documentation</a> — RAG evaluation framework<br>
+        <a href="https://www.deeplearning.ai/short-courses/" target="_blank" style="color:var(--accent);text-decoration:underline">DeepLearning.AI Short Courses</a> — Free AI agent courses<br>
+        <a href="https://arxiv.org/abs/2210.03629" target="_blank" style="color:var(--accent);text-decoration:underline">ReAct Paper (Yao et al.)</a> — The foundational ReAct reasoning pattern
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1008,7 +1208,7 @@ const observer = new IntersectionObserver(entries => {
 }, { threshold: 0.3 });
 
 document.querySelectorAll('[id^="cat-"]').forEach(el => observer.observe(el));
-['methodology','structure','bestpractices'].forEach(id => {
+['methodology','structure','bestpractices','whywhathowhwen','implementation','resources'].forEach(id => {
   const el = document.getElementById(id);
   if (el) observer.observe(el);
 });
