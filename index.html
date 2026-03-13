@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AgentForge — AI Agent Engineering Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --ink:#0b0c0b;
+  --paper:#f5f2eb;
+  --paper2:#ede9df;
+  --paper3:#e4dfd3;
+  --rule:#c8c2b5;
+  --rule2:#9e9788;
+  --aws:#e8720c;
+  --azure:#0078d4;
+  --gcp:#1a73e8;
+  --oss:#16a34a;
+  --accent:#c8420a;
+  --gold:#b8860b;
+  --mono:'IBM Plex Mono',monospace;
+  --display:'Bebas Neue',sans-serif;
+  --serif:'Fraunces',Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--mono);font-size:13px;line-height:1.6;min-height:100vh}
+
+/* ── Layout ── */
+.shell{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+@media(max-width:900px){.shell{grid-template-columns:1fr}}
+
+/* ── Sidebar ── */
+aside{background:var(--ink);color:var(--paper);position:sticky;top:0;height:100vh;overflow-y:auto;padding:0;display:flex;flex-direction:column}
+.brand{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.brand-eyebrow{font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:6px}
+.brand-title{font-family:var(--display);font-size:42px;line-height:1;color:var(--paper);letter-spacing:.02em}
+.brand-sub{font-size:10px;color:rgba(255,255,255,.4);margin-top:4px;letter-spacing:.05em}
+.author-block{padding:14px 24px;border-bottom:1px solid rgba(255,255,255,.08);font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.05em}
+.author-block strong{color:rgba(255,255,255,.7);display:block;margin-bottom:1px}
+
+nav{flex:1;padding:12px 0}
+.nav-section{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.25);padding:14px 24px 6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 24px;cursor:pointer;transition:background .15s;border-left:2px solid transparent;font-size:11px;color:rgba(255,255,255,.55);text-decoration:none}
+.nav-item:hover{background:rgba(255,255,255,.06);color:var(--paper)}
+.nav-item.active{background:rgba(255,255,255,.09);border-left-color:var(--accent);color:var(--paper)}
+.nav-item .cat-num{font-family:var(--display);font-size:18px;line-height:1;min-width:28px;color:rgba(255,255,255,.25);transition:color .15s}
+.nav-item.active .cat-num{color:var(--accent)}
+.nav-item .cat-label{flex:1;line-height:1.3}
+.badge{font-size:8px;padding:1px 5px;border-radius:2px;letter-spacing:.05em;font-weight:600}
+.badge-aws{background:rgba(232,114,12,.2);color:#f4a054}
+.badge-multi{background:rgba(22,163,74,.15);color:#4ade80}
+
+.sidebar-footer{padding:16px 24px;border-top:1px solid rgba(255,255,255,.08);font-size:9px;color:rgba(255,255,255,.25);letter-spacing:.04em}
+
+/* ── Main ── */
+main{background:var(--paper);overflow-x:hidden}
+@media(max-width:900px){aside{display:none}}
+
+/* ── Hero ── */
+.hero{background:var(--ink);color:var(--paper);padding:56px 56px 52px;position:relative;overflow:hidden;border-bottom:3px solid var(--accent)}
+.hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(255,255,255,.03) 39px,rgba(255,255,255,.03) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(255,255,255,.03) 39px,rgba(255,255,255,.03) 40px)}
+.hero-eyebrow{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;position:relative}
+.hero-title{font-family:var(--display);font-size:clamp(52px,7vw,88px);line-height:.95;letter-spacing:.01em;position:relative;margin-bottom:20px}
+.hero-title em{font-style:normal;color:var(--accent)}
+.hero-desc{font-family:var(--serif);font-size:15px;font-weight:300;line-height:1.7;max-width:600px;color:rgba(255,255,255,.7);position:relative;margin-bottom:32px}
+.hero-stats{display:flex;gap:32px;position:relative}
+.hero-stat{text-align:center}
+.hero-stat-num{font-family:var(--display);font-size:36px;color:var(--paper);line-height:1}
+.hero-stat-label{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:3px}
+
+/* ── Section header ── */
+.section-header{padding:32px 56px 0;display:flex;align-items:baseline;gap:16px;border-top:1px solid var(--rule)}
+.section-title{font-family:var(--display);font-size:28px;letter-spacing:.02em;color:var(--ink)}
+.section-rule{flex:1;height:1px;background:var(--rule);align-self:center}
+.section-count{font-size:10px;color:var(--rule2);letter-spacing:.08em}
+
+/* ── Category cards ── */
+.cards-grid{padding:24px 56px 48px;display:flex;flex-direction:column;gap:0}
+
+.cat-card{border:1px solid var(--rule);border-bottom:none;background:var(--paper);transition:background .15s;position:relative}
+.cat-card:last-child{border-bottom:1px solid var(--rule)}
+.cat-card-header{display:grid;grid-template-columns:72px 1fr auto;align-items:start;gap:0;cursor:pointer;padding:0}
+.cat-card-header:hover{background:var(--paper2)}
+.cat-num-col{padding:22px 0 22px 0;text-align:center;background:var(--ink);color:var(--paper);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:4px;height:100%;min-height:72px}
+.cat-num-col .num{font-family:var(--display);font-size:28px;line-height:1;color:rgba(255,255,255,.9)}
+.cat-num-col .emo{font-size:14px;line-height:1}
+.cat-body-col{padding:18px 20px 18px 20px}
+.cat-title{font-family:var(--display);font-size:20px;letter-spacing:.02em;color:var(--ink);line-height:1;margin-bottom:5px}
+.cat-desc{font-family:var(--serif);font-size:12px;font-weight:300;color:var(--rule2);line-height:1.5;margin-bottom:10px}
+.services-row{display:flex;flex-wrap:wrap;gap:4px}
+.svc{font-size:9px;letter-spacing:.04em;padding:2px 7px;border-radius:2px;font-weight:500;white-space:nowrap;border:1px solid}
+.svc-aws{background:rgba(232,114,12,.1);color:#9a4a06;border-color:rgba(232,114,12,.3)}
+.svc-azure{background:rgba(0,120,212,.08);color:#004f8e;border-color:rgba(0,120,212,.25)}
+.svc-gcp{background:rgba(26,115,232,.08);color:#0c4da1;border-color:rgba(26,115,232,.25)}
+.svc-oss{background:rgba(22,163,74,.08);color:#0a5c29;border-color:rgba(22,163,74,.25)}
+
+.cat-toggle-col{padding:22px 20px;display:flex;align-items:flex-start;gap:8px}
+.toggle-btn{width:24px;height:24px;border:1px solid var(--rule);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--rule2);transition:all .15s;border-radius:2px;flex-shrink:0}
+.toggle-btn:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.toggle-btn.open{background:var(--accent);border-color:var(--accent);color:white}
+
+/* ── Expandable panel ── */
+.cat-panel{display:none;border-top:1px solid var(--rule2)}
+.cat-panel.open{display:grid;grid-template-columns:1fr 1fr;gap:0}
+@media(max-width:700px){.cat-panel.open{grid-template-columns:1fr}}
+
+.panel-left{padding:28px 28px 28px 28px;border-right:1px solid var(--rule)}
+.panel-right{padding:28px 28px}
+
+.panel-heading{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--rule2);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.panel-heading::after{content:'';flex:1;height:1px;background:var(--rule)}
+
+/* Architecture box */
+.arch-box{background:var(--ink);color:var(--paper);padding:20px;border-radius:2px;margin-bottom:18px;font-size:10px;line-height:1.8;font-family:var(--mono)}
+.arch-box .arch-title{font-family:var(--display);font-size:20px;color:var(--accent);margin-bottom:10px;letter-spacing:.03em}
+.arch-row{display:flex;align-items:center;gap:8px;margin-bottom:2px;color:rgba(255,255,255,.7)}
+.arch-row .arrow{color:var(--accent);font-size:10px}
+.arch-row .node-label{color:rgba(255,255,255,.5);font-size:9px}
+
+/* Exercises */
+.ex-list{display:flex;flex-direction:column;gap:12px}
+.ex-item{border:1px solid var(--rule);padding:14px 16px;background:var(--paper);position:relative;border-radius:2px}
+.ex-item::before{content:attr(data-num);position:absolute;left:-1px;top:-1px;bottom:-1px;width:4px;background:var(--rule2)}
+.ex-item[data-level="beginner"]::before{background:var(--oss)}
+.ex-item[data-level="intermediate"]::before{background:var(--azure)}
+.ex-item[data-level="advanced"]::before{background:var(--accent)}
+.ex-item[data-level="stretch"]::before{background:var(--gold)}
+.ex-num{font-size:9px;letter-spacing:.12em;color:var(--rule2);text-transform:uppercase;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.ex-level{padding:1px 5px;font-size:8px;border-radius:1px;font-weight:600;letter-spacing:.05em}
+.level-beginner{background:rgba(22,163,74,.12);color:#0a5c29}
+.level-intermediate{background:rgba(0,120,212,.1);color:#004f8e}
+.level-advanced{background:rgba(200,66,10,.12);color:#7a2004}
+.level-stretch{background:rgba(184,134,11,.12);color:#5a400a}
+.ex-title{font-family:var(--serif);font-size:13px;font-weight:400;color:var(--ink);margin-bottom:5px;line-height:1.4}
+.ex-body{font-size:10px;color:var(--rule2);line-height:1.6}
+.ex-code{background:var(--ink);color:rgba(255,255,255,.8);padding:8px 10px;border-radius:2px;margin-top:8px;font-size:9px;line-height:1.7;overflow-x:auto}
+
+/* ── Methodology section ── */
+.method-section{background:var(--ink);color:var(--paper);padding:48px 56px;position:relative;overflow:hidden}
+.method-section::after{content:'BUILD WITH AGENTCORE';position:absolute;right:-20px;bottom:-10px;font-family:var(--display);font-size:120px;color:rgba(255,255,255,.03);white-space:nowrap;pointer-events:none;letter-spacing:.02em}
+.method-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:rgba(255,255,255,.1);margin-top:28px}
+@media(max-width:700px){.method-grid{grid-template-columns:1fr}}
+.method-item{background:var(--ink);padding:24px;transition:background .15s}
+.method-item:hover{background:rgba(255,255,255,.04)}
+.method-icon{font-family:var(--display);font-size:40px;color:var(--accent);line-height:1;margin-bottom:10px}
+.method-title{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.8);margin-bottom:6px;font-weight:500}
+.method-body{font-size:10px;color:rgba(255,255,255,.4);line-height:1.7}
+
+/* ── Project structure ── */
+.structure-section{padding:48px 56px;border-top:1px solid var(--rule)}
+.tree{font-family:var(--mono);font-size:11px;line-height:1.9;color:var(--ink);background:var(--paper2);padding:24px 28px;border:1px solid var(--rule);border-radius:2px;overflow-x:auto;tab-size:2}
+.tree .dir{color:var(--accent);font-weight:500}
+.tree .file{color:var(--ink)}
+.tree .comment{color:var(--rule2)}
+.tree .lab{color:var(--azure);font-weight:500}
+
+/* ── Best practices ── */
+.bp-section{padding:48px 56px;border-top:1px solid var(--rule);background:var(--paper2)}
+.bp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:24px}
+.bp-item{background:var(--paper2);padding:14px 16px;transition:background .15s}
+.bp-item:hover{background:var(--paper)}
+.bp-item-num{font-family:var(--display);font-size:22px;color:var(--rule);line-height:1;margin-bottom:4px}
+.bp-item-title{font-size:10px;font-weight:500;letter-spacing:.04em;color:var(--ink)}
+.bp-item-body{font-size:9px;color:var(--rule2);line-height:1.5;margin-top:3px}
+
+/* ── Footer ── */
+footer{background:var(--ink);color:rgba(255,255,255,.35);padding:32px 56px;font-size:9px;letter-spacing:.08em;border-top:3px solid var(--accent);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+footer strong{color:rgba(255,255,255,.7)}
+footer a{color:rgba(255,255,255,.5);text-decoration:none}
+footer a:hover{color:var(--paper)}
+
+/* ── Filter toolbar ── */
+.filter-bar{padding:16px 56px;background:var(--paper2);border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.filter-label{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--rule2);margin-right:4px}
+.filter-btn{font-size:9px;letter-spacing:.06em;padding:4px 10px;border:1px solid var(--rule);background:transparent;cursor:pointer;border-radius:2px;font-family:var(--mono);color:var(--rule2);transition:all .15s}
+.filter-btn:hover,.filter-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.filter-btn.active-aws{background:var(--aws);border-color:var(--aws);color:white}
+.filter-btn.active-azure{background:var(--azure);border-color:var(--azure);color:white}
+.filter-btn.active-gcp{background:var(--gcp);border-color:var(--gcp);color:white}
+.filter-btn.active-oss{background:var(--oss);border-color:var(--oss);color:white}
+
+/* scroll tweaks */
+aside::-webkit-scrollbar{width:4px}
+aside::-webkit-scrollbar-track{background:transparent}
+aside::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ════════════════════ SIDEBAR ════════════════════ -->
+<aside>
+  <div class="brand">
+    <div class="brand-eyebrow">AI Agent Engineering</div>
+    <div class="brand-title">AGENT<br>FORGE</div>
+    <div class="brand-sub">curriculum · labs · deployment</div>
+  </div>
+  <div class="author-block">
+    <strong>Kehinde Ogunlowo</strong>
+    kogunlowo123 · Build With AgentCore
+  </div>
+  <nav>
+    <div class="nav-section">Agent Categories</div>
+    <a class="nav-item active" href="#cat-01" onclick="setActive(this)">
+      <span class="cat-num">01</span>
+      <span class="cat-label">Conversational &amp; Copilot<br><span style="font-size:9px;color:rgba(255,255,255,.3)">Knowledge assistants</span></span>
+    </a>
+    <a class="nav-item" href="#cat-02" onclick="setActive(this)">
+      <span class="cat-num">02</span>
+      <span class="cat-label">Autonomous Task<br><span style="font-size:9px;color:rgba(255,255,255,.3)">LLM orchestration</span></span>
+    </a>
+    <a class="nav-item" href="#cat-03" onclick="setActive(this)">
+      <span class="cat-num">03</span>
+      <span class="cat-label">Developer &amp; DevOps<br><span style="font-size:9px;color:rgba(255,255,255,.3)">IaC automation</span></span>
+    </a>
+    <a class="nav-item" href="#cat-04" onclick="setActive(this)">
+      <span class="cat-num">04</span>
+      <span class="cat-label">Data &amp; Analytics<br><span style="font-size:9px;color:rgba(255,255,255,.3)">RAG &amp; NLQ systems</span></span>
+    </a>
+    <a class="nav-item" href="#cat-05" onclick="setActive(this)">
+      <span class="cat-num">05</span>
+      <span class="cat-label">Security &amp; Governance<br><span style="font-size:9px;color:rgba(255,255,255,.3)">Threat &amp; compliance</span></span>
+    </a>
+    <a class="nav-item" href="#cat-06" onclick="setActive(this)">
+      <span class="cat-num">06</span>
+      <span class="cat-label">Industry-Specific<br><span style="font-size:9px;color:rgba(255,255,255,.3)">Healthcare, retail, media</span></span>
+    </a>
+    <a class="nav-item" href="#cat-07" onclick="setActive(this)">
+      <span class="cat-num">07</span>
+      <span class="cat-label">Infrastructure &amp; Orchestration<br><span style="font-size:9px;color:rgba(255,255,255,.3)">Cloud ops agents</span></span>
+    </a>
+    <a class="nav-item" href="#cat-08" onclick="setActive(this)">
+      <span class="cat-num">08</span>
+      <span class="cat-label">Cross-Cloud &amp; Agnostic<br><span style="font-size:9px;color:rgba(255,255,255,.3)">Framework patterns</span></span>
+    </a>
+    <div class="nav-section" style="margin-top:8px">Resources</div>
+    <a class="nav-item" href="#methodology">
+      <span class="cat-num" style="font-size:14px">★</span>
+      <span class="cat-label">Methodology</span>
+    </a>
+    <a class="nav-item" href="#structure">
+      <span class="cat-num" style="font-size:14px">⌥</span>
+      <span class="cat-label">Project Structure</span>
+    </a>
+    <a class="nav-item" href="#bestpractices">
+      <span class="cat-num" style="font-size:14px">⊕</span>
+      <span class="cat-label">15 Best Practices</span>
+    </a>
+  </nav>
+  <div class="sidebar-footer">AgentForge v1.0 · March 2025 · MIT License</div>
+</aside>
+
+<!-- ════════════════════ MAIN ════════════════════ -->
+<main>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-eyebrow">Build With AgentCore Challenge</div>
+  <div class="hero-title">AGENT<br><em>FORGE</em></div>
+  <div class="hero-desc">A hands-on curriculum covering all eight enterprise AI agent categories across AWS, Azure, and Google Cloud — with real exercises, deployment scripts, and production-grade patterns.</div>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-num">08</div><div class="hero-stat-label">Categories</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">40+</div><div class="hero-stat-label">Services</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">32</div><div class="hero-stat-label">Exercises</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">03</div><div class="hero-stat-label">Cloud Providers</div></div>
+  </div>
+</div>
+
+<!-- Filter bar -->
+<div class="filter-bar">
+  <span class="filter-label">Filter by cloud</span>
+  <button class="filter-btn active" onclick="filterCards('all',this)">All</button>
+  <button class="filter-btn" onclick="filterCards('aws',this)" style="color:#9a4a06;border-color:rgba(232,114,12,.4)">AWS</button>
+  <button class="filter-btn" onclick="filterCards('azure',this)" style="color:#004f8e;border-color:rgba(0,120,212,.4)">Azure</button>
+  <button class="filter-btn" onclick="filterCards('gcp',this)" style="color:#0c4da1;border-color:rgba(26,115,232,.4)">GCP</button>
+  <button class="filter-btn" onclick="filterCards('oss',this)" style="color:#0a5c29;border-color:rgba(22,163,74,.4)">Open Source</button>
+  <span style="margin-left:auto;font-size:9px;color:var(--rule2);letter-spacing:.06em">Click any card to expand exercises →</span>
+</div>
+
+<!-- Section header -->
+<div class="section-header">
+  <div class="section-title">AGENT CATEGORIES</div>
+  <div class="section-rule"></div>
+  <div class="section-count">8 PATTERNS · 3 CLOUDS</div>
+</div>
+
+<!-- ════ CARDS GRID ════ -->
+<div class="cards-grid" id="cards-grid">
+
+<!-- ── CAT 01 ── -->
+<div class="cat-card" id="cat-01" data-cloud="aws azure gcp">
+  <div class="cat-card-header" onclick="toggleCard('panel-01','btn-01')">
+    <div class="cat-num-col"><span class="num">01</span><span class="emo">💬</span></div>
+    <div class="cat-body-col">
+      <div class="cat-title">CONVERSATIONAL &amp; COPILOT ASSISTANTS</div>
+      <div class="cat-desc">Enterprise knowledge assistants and workflow copilots across all three major clouds — from internal helpdesk bots to fully embedded Copilot experiences.</div>
+      <div class="services-row">
+        <span class="svc svc-aws">Amazon Q Business</span>
+        <span class="svc svc-aws">Amazon Lex</span>
+        <span class="svc svc-aws">Amazon Connect</span>
+        <span class="svc svc-azure">Microsoft Copilot</span>
+        <span class="svc svc-azure">Azure AI Bot Service</span>
+        <span class="svc svc-gcp">Gemini for GCP</span>
+        <span class="svc svc-gcp">Google Workspace Gemini</span>
+        <span class="svc svc-gcp">Dialogflow</span>
+      </div>
+    </div>
+    <div class="cat-toggle-col"><button class="toggle-btn" id="btn-01">+</button></div>
+  </div>
+  <div class="cat-panel" id="panel-01">
+    <div class="panel-left">
+      <div class="panel-heading">Architecture Pattern</div>
+      <div class="arch-box">
+        <div class="arch-title">CONV AGENT FLOW</div>
+        <div class="arch-row"><span class="arrow">▶</span> User query → Amazon Lex / Dialogflow <span class="node-label">[NLU intent]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Intent routing → Lambda orchestrator <span class="node-label">[conditional]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Context fetch → DynamoDB session store <span class="node-label">[memory]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> LLM call → Bedrock / Azure OpenAI <span class="node-label">[generation]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Response → channel (Slack / Web / Connect) <span class="node-label">[delivery]</span></div>
+      </div>
+      <div class="panel-heading" style="margin-top:16px">Key Concepts</div>
+      <div style="font-size:10px;color:var(--rule2);line-height:1.8">
+        <div>→ Intent classification + slot filling</div>
+        <div>→ Session persistence across turns</div>
+        <div>→ Omnichannel routing (web / voice / email)</div>
+        <div>→ Fallback escalation to human agents</div>
+        <div>→ Tone guardrails + content filtering</div>
+      </div>
+    </div>
+    <div class="panel-right">
+      <div class="panel-heading">Lab Exercises</div>
+      <div class="ex-list">
+        <div class="ex-item" data-level="beginner">
+          <div class="ex-num"><span class="ex-level level-beginner">Beginner</span> Exercise 1.1</div>
+          <div class="ex-title">Build a multi-turn FAQ bot with Amazon Lex + Lambda</div>
+          <div class="ex-body">Create a Lex bot with 5 custom intents, wire a Lambda fulfillment function, and add DynamoDB session persistence. Test with 10 conversation turns.</div>
+          <div class="ex-code">aws lex-models put-bot --name AgentForgeFAQ \<br>&nbsp;&nbsp;--locale en-US --child-directed false</div>
+        </div>
+        <div class="ex-item" data-level="intermediate">
+          <div class="ex-num"><span class="ex-level level-intermediate">Intermediate</span> Exercise 1.2</div>
+          <div class="ex-title">Wire Amazon Q Business to your internal knowledge base</div>
+          <div class="ex-body">Connect Amazon Q Business to an S3 document corpus. Configure IAM identity-aware retrieval. Measure response accuracy against 20 known Q&amp;A pairs.</div>
+        </div>
+        <div class="ex-item" data-level="advanced">
+          <div class="ex-num"><span class="ex-level level-advanced">Advanced</span> Exercise 1.3</div>
+          <div class="ex-title">Omnichannel copilot: Slack + Web + Amazon Connect</div>
+          <div class="ex-body">Deploy the same agent across three channels using a unified Lambda adapter. Maintain cross-channel session state. Add graceful human hand-off via Amazon Connect.</div>
+        </div>
+        <div class="ex-item" data-level="stretch">
+          <div class="ex-num"><span class="ex-level level-stretch">Stretch</span> Exercise 1.4</div>
+          <div class="ex-title">Tone analysis + escalation classifier</div>
+          <div class="ex-body">Use Amazon Comprehend sentiment analysis on every user turn. Auto-escalate to a human agent when sentiment score drops below -0.6 for two consecutive turns.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CAT 02 ── -->
+<div class="cat-card" id="cat-02" data-cloud="aws azure gcp">
+  <div class="cat-card-header" onclick="toggleCard('panel-02','btn-02')">
+    <div class="cat-num-col"><span class="num">02</span><span class="emo">🤖</span></div>
+    <div class="cat-body-col">
+      <div class="cat-title">AUTONOMOUS TASK AGENTS</div>
+      <div class="cat-desc">Multi-step task execution agents with LLM-powered orchestration and event-driven triggers — capable of planning, tool-calling, and self-correcting over long horizons.</div>
+      <div class="services-row">
+        <span class="svc svc-aws">Bedrock Agents</span>
+        <span class="svc svc-aws">Step Functions + LLM</span>
+        <span class="svc svc-aws">Lambda Event Agents</span>
+        <span class="svc svc-azure">Azure AI Agent Service</span>
+        <span class="svc svc-azure">Logic Apps Orchestrators</span>
+        <span class="svc svc-gcp">Vertex AI Agent Builder</span>
+      </div>
+    </div>
+    <div class="cat-toggle-col"><button class="toggle-btn" id="btn-02">+</button></div>
+  </div>
+  <div class="cat-panel" id="panel-02">
+    <div class="panel-left">
+      <div class="panel-heading">Architecture Pattern</div>
+      <div class="arch-box">
+        <div class="arch-title">REACT LOOP</div>
+        <div class="arch-row"><span class="arrow">▶</span> Goal input → Bedrock Agent <span class="node-label">[plan]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Thought → Tool selection <span class="node-label">[reason]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Tool call → Action Group Lambda <span class="node-label">[act]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Observation → model context <span class="node-label">[observe]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Loop until stopReason = end_turn <span class="node-label">[terminate]</span></div>
+      </div>
+      <div class="panel-heading" style="margin-top:16px">Key Concepts</div>
+      <div style="font-size:10px;color:var(--rule2);line-height:1.8">
+        <div>→ ReAct: Reason + Act + Observe loop</div>
+        <div>→ Action Groups as typed tool schemas</div>
+        <div>→ Knowledge Bases for grounded context</div>
+        <div>→ Step Functions for deterministic branching</div>
+        <div>→ Guardrails for output validation</div>
+      </div>
+    </div>
+    <div class="panel-right">
+      <div class="panel-heading">Lab Exercises</div>
+      <div class="ex-list">
+        <div class="ex-item" data-level="beginner">
+          <div class="ex-num"><span class="ex-level level-beginner">Beginner</span> Exercise 2.1</div>
+          <div class="ex-title">First ReAct agent using Bedrock Agents + Action Group</div>
+          <div class="ex-body">Create a Bedrock Agent with three Action Groups: get_weather, create_calendar_event, and send_email. Trigger a multi-step workflow: "Schedule a meeting about the storm tomorrow."</div>
+        </div>
+        <div class="ex-item" data-level="intermediate">
+          <div class="ex-num"><span class="ex-level level-intermediate">Intermediate</span> Exercise 2.2</div>
+          <div class="ex-title">Event-driven agent triggered by S3 uploads</div>
+          <div class="ex-body">Wire an S3 event notification to a Lambda that invokes a Bedrock Agent. The agent must classify the document, extract metadata, and route it to the correct DynamoDB table.</div>
+          <div class="ex-code">aws s3api put-bucket-notification-configuration \<br>&nbsp;&nbsp;--bucket agentforge-inbox --notification-config file://notify.json</div>
+        </div>
+        <div class="ex-item" data-level="advanced">
+          <div class="ex-num"><span class="ex-level level-advanced">Advanced</span> Exercise 2.3</div>
+          <div class="ex-title">Long-horizon task: code review → PR → Jira ticket pipeline</div>
+          <div class="ex-body">Build an agent that reviews a GitHub PR diff, generates inline comments via the GitHub API, creates a Jira ticket for each critical finding, and posts a Slack summary — all autonomously.</div>
+        </div>
+        <div class="ex-item" data-level="stretch">
+          <div class="ex-num"><span class="ex-level level-stretch">Stretch</span> Exercise 2.4</div>
+          <div class="ex-title">Self-healing agent with retry and plan revision</div>
+          <div class="ex-body">Introduce deliberate tool failures (20% error rate). Instrument the agent to detect failures, revise its plan, and retry with an alternative strategy. Log plan revisions to CloudWatch.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CAT 03 ── -->
+<div class="cat-card" id="cat-03" data-cloud="aws azure gcp oss">
+  <div class="cat-card-header" onclick="toggleCard('panel-03','btn-03')">
+    <div class="cat-num-col"><span class="num">03</span><span class="emo">⚙️</span></div>
+    <div class="cat-body-col">
+      <div class="cat-title">DEVELOPER &amp; DEVOPS AGENTS</div>
+      <div class="cat-desc">AI coding and pipeline automation with IaC auto-remediation across all major platforms — from intelligent code review to fully autonomous infrastructure repair.</div>
+      <div class="services-row">
+        <span class="svc svc-aws">Amazon Q Developer</span>
+        <span class="svc svc-aws">CodeWhisperer</span>
+        <span class="svc svc-oss">GitHub Copilot</span>
+        <span class="svc svc-azure">Azure DevOps AI</span>
+        <span class="svc svc-gcp">Gemini Code Assist</span>
+        <span class="svc svc-gcp">Cloud Build AI</span>
+        <span class="svc svc-oss">Terraform Auto-Remediation</span>
+      </div>
+    </div>
+    <div class="cat-toggle-col"><button class="toggle-btn" id="btn-03">+</button></div>
+  </div>
+  <div class="cat-panel" id="panel-03">
+    <div class="panel-left">
+      <div class="panel-heading">Architecture Pattern</div>
+      <div class="arch-box">
+        <div class="arch-title">DEVOPS AGENT FLOW</div>
+        <div class="arch-row"><span class="arrow">▶</span> Git push → GitHub Actions / CodePipeline <span class="node-label">[trigger]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Code scan → Amazon Q Developer <span class="node-label">[analysis]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Issue detected → Bedrock agent <span class="node-label">[remediation]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Patch generated → PR auto-created <span class="node-label">[fix]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> tf plan → drift detected → auto-apply <span class="node-label">[IaC]</span></div>
+      </div>
+      <div class="panel-heading" style="margin-top:16px">Key Concepts</div>
+      <div style="font-size:10px;color:var(--rule2);line-height:1.8">
+        <div>→ CI/CD pipeline as agent trigger surface</div>
+        <div>→ Diff-aware code generation</div>
+        <div>→ Terraform plan parsing + remediation</div>
+        <div>→ Security scanning + auto-patch PRs</div>
+        <div>→ Rollback guards and change approvals</div>
+      </div>
+    </div>
+    <div class="panel-right">
+      <div class="panel-heading">Lab Exercises</div>
+      <div class="ex-list">
+        <div class="ex-item" data-level="beginner">
+          <div class="ex-num"><span class="ex-level level-beginner">Beginner</span> Exercise 3.1</div>
+          <div class="ex-title">Automated code review agent on every pull request</div>
+          <div class="ex-body">Build a GitHub Actions workflow that sends the PR diff to Bedrock (Claude). Parse the response for severity-tagged issues and post inline review comments via the GitHub API.</div>
+          <div class="ex-code">- uses: actions/checkout@v4<br>- run: python review_agent.py ${{ github.event.pull_request.number }}</div>
+        </div>
+        <div class="ex-item" data-level="intermediate">
+          <div class="ex-num"><span class="ex-level level-intermediate">Intermediate</span> Exercise 3.2</div>
+          <div class="ex-title">Terraform drift detection + LLM-powered remediation</div>
+          <div class="ex-body">Run terraform plan on a schedule. When drift is detected, pass the plan JSON to a Bedrock agent that generates the corrective apply commands and creates a Jira ticket for approval.</div>
+        </div>
+        <div class="ex-item" data-level="advanced">
+          <div class="ex-num"><span class="ex-level level-advanced">Advanced</span> Exercise 3.3</div>
+          <div class="ex-title">Full autonomous incident-to-patch pipeline</div>
+          <div class="ex-body">PagerDuty alert fires → agent reads CloudWatch logs → identifies root cause → generates a code fix → opens a PR → pings on-call engineer → auto-merges after approval timeout.</div>
+        </div>
+        <div class="ex-item" data-level="stretch">
+          <div class="ex-num"><span class="ex-level level-stretch">Stretch</span> Exercise 3.4</div>
+          <div class="ex-title">Security posture agent with CSPM integration</div>
+          <div class="ex-body">Connect AWS Security Hub findings to a Bedrock agent. For each HIGH severity finding: generate a remediation Terraform snippet, estimate blast radius, and post to a security Slack channel.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CAT 04 ── -->
+<div class="cat-card" id="cat-04" data-cloud="aws azure gcp">
+  <div class="cat-card-header" onclick="toggleCard('panel-04','btn-04')">
+    <div class="cat-num-col"><span class="num">04</span><span class="emo">📊</span></div>
+    <div class="cat-body-col">
+      <div class="cat-title">DATA &amp; ANALYTICS AGENTS</div>
+      <div class="cat-desc">Intelligent analytics and RAG systems with natural language query across BI platforms — turning terabytes of structured and unstructured data into instant conversational insights.</div>
+      <div class="services-row">
+        <span class="svc svc-aws">QuickSight Q</span>
+        <span class="svc svc-aws">Bedrock RAG + OpenSearch</span>
+        <span class="svc svc-azure">Microsoft Fabric AI</span>
+        <span class="svc svc-azure">Power BI Copilot</span>
+        <span class="svc svc-gcp">BigQuery + Gemini NLQ</span>
+        <span class="svc svc-gcp">Looker AI</span>
+        <span class="svc svc-gcp">Vertex AI Search</span>
+      </div>
+    </div>
+    <div class="cat-toggle-col"><button class="toggle-btn" id="btn-04">+</button></div>
+  </div>
+  <div class="cat-panel" id="panel-04">
+    <div class="panel-left">
+      <div class="panel-heading">Architecture Pattern</div>
+      <div class="arch-box">
+        <div class="arch-title">RAG + NLQ PIPELINE</div>
+        <div class="arch-row"><span class="arrow">▶</span> NL query → embed → vector search <span class="node-label">[retrieve]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Top-K chunks → re-ranker <span class="node-label">[filter]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Prompt + context → Bedrock / Gemini <span class="node-label">[generate]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> SQL intent → Athena / BigQuery execute <span class="node-label">[query]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Result → chart + narrative response <span class="node-label">[output]</span></div>
+      </div>
+      <div class="panel-heading" style="margin-top:16px">Key Concepts</div>
+      <div style="font-size:10px;color:var(--rule2);line-height:1.8">
+        <div>→ Chunking strategies (512 tokens, overlapping)</div>
+        <div>→ Hybrid search: vector + BM25 keyword</div>
+        <div>→ NL-to-SQL with schema injection</div>
+        <div>→ Result confidence scoring</div>
+        <div>→ Citation and source attribution</div>
+      </div>
+    </div>
+    <div class="panel-right">
+      <div class="panel-heading">Lab Exercises</div>
+      <div class="ex-list">
+        <div class="ex-item" data-level="beginner">
+          <div class="ex-num"><span class="ex-level level-beginner">Beginner</span> Exercise 4.1</div>
+          <div class="ex-title">Build a document Q&amp;A agent with Bedrock Knowledge Bases</div>
+          <div class="ex-body">Upload 10 PDF documents to S3. Create a Bedrock Knowledge Base backed by OpenSearch Serverless. Build a Lambda that answers natural language questions with cited source passages.</div>
+        </div>
+        <div class="ex-item" data-level="intermediate">
+          <div class="ex-num"><span class="ex-level level-intermediate">Intermediate</span> Exercise 4.2</div>
+          <div class="ex-title">NL-to-SQL agent over an Athena data lake</div>
+          <div class="ex-body">Build an agent that receives a business question, generates SQL using the Glue schema catalog as context, executes against Athena, and returns a formatted table + narrative summary.</div>
+          <div class="ex-code">SELECT * FROM "agentforge_db"."sales_events"<br>WHERE region = 'us-east-1' AND date &gt; '2024-01-01'</div>
+        </div>
+        <div class="ex-item" data-level="advanced">
+          <div class="ex-num"><span class="ex-level level-advanced">Advanced</span> Exercise 4.3</div>
+          <div class="ex-title">Hybrid RAG with re-ranking and confidence gating</div>
+          <div class="ex-body">Combine Titan Embeddings vector search with BM25 keyword search. Implement a cross-encoder re-ranker. Gate responses: only answer if top chunk score &gt; 0.72, else escalate to human.</div>
+        </div>
+        <div class="ex-item" data-level="stretch">
+          <div class="ex-num"><span class="ex-level level-stretch">Stretch</span> Exercise 4.4</div>
+          <div class="ex-title">Self-evaluating RAG with RAGAS metrics pipeline</div>
+          <div class="ex-body">Instrument every RAG call with RAGAS metrics (faithfulness, answer relevance, context precision). Build a CloudWatch dashboard tracking metric drift. Alert when faithfulness drops below 0.85.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CAT 05 ── -->
+<div class="cat-card" id="cat-05" data-cloud="aws azure gcp">
+  <div class="cat-card-header" onclick="toggleCard('panel-05','btn-05')">
+    <div class="cat-num-col"><span class="num">05</span><span class="emo">🛡️</span></div>
+    <div class="cat-body-col">
+      <div class="cat-title">SECURITY &amp; GOVERNANCE AGENTS</div>
+      <div class="cat-desc">Automated threat triage, compliance validation, and IAM policy intelligence — agents that can read security signals faster than any human SOC team and act without hesitation.</div>
+      <div class="services-row">
+        <span class="svc svc-aws">GuardDuty + LLM</span>
+        <span class="svc svc-aws">Security Hub AI</span>
+        <span class="svc svc-azure">Defender for Cloud</span>
+        <span class="svc svc-azure">Sentinel AI Copilot</span>
+        <span class="svc svc-azure">Entra ID Risk Analysis</span>
+        <span class="svc svc-gcp">GCP SCC</span>
+        <span class="svc svc-gcp">Chronicle AI</span>
+      </div>
+    </div>
+    <div class="cat-toggle-col"><button class="toggle-btn" id="btn-05">+</button></div>
+  </div>
+  <div class="cat-panel" id="panel-05">
+    <div class="panel-left">
+      <div class="panel-heading">Architecture Pattern</div>
+      <div class="arch-box">
+        <div class="arch-title">THREAT TRIAGE AGENT</div>
+        <div class="arch-row"><span class="arrow">▶</span> GuardDuty finding → EventBridge <span class="node-label">[signal]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Lambda → enrich with CloudTrail logs <span class="node-label">[context]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Bedrock agent → severity + TTPs classify <span class="node-label">[triage]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> HIGH → auto-isolate resource via SSM <span class="node-label">[contain]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Report → Security Hub + Slack + Jira <span class="node-label">[report]</span></div>
+      </div>
+      <div class="panel-heading" style="margin-top:16px">Key Concepts</div>
+      <div style="font-size:10px;color:var(--rule2);line-height:1.8">
+        <div>→ MITRE ATT&amp;CK TTP classification</div>
+        <div>→ Blast radius estimation</div>
+        <div>→ Least-privilege IAM policy generation</div>
+        <div>→ Automated containment playbooks</div>
+        <div>→ Compliance gap analysis (SOC2 / ISO 27001)</div>
+      </div>
+    </div>
+    <div class="panel-right">
+      <div class="panel-heading">Lab Exercises</div>
+      <div class="ex-list">
+        <div class="ex-item" data-level="beginner">
+          <div class="ex-num"><span class="ex-level level-beginner">Beginner</span> Exercise 5.1</div>
+          <div class="ex-title">GuardDuty finding enrichment and narrative generator</div>
+          <div class="ex-body">Subscribe to GuardDuty findings via EventBridge. For each finding, call Bedrock to generate a plain-English explanation with: what happened, affected resource, recommended action, and MITRE TTP mapping.</div>
+        </div>
+        <div class="ex-item" data-level="intermediate">
+          <div class="ex-num"><span class="ex-level level-intermediate">Intermediate</span> Exercise 5.2</div>
+          <div class="ex-title">IAM policy least-privilege analyser</div>
+          <div class="ex-body">Parse IAM policies using Boto3. Send overly-permissive policies to a Bedrock agent that suggests a tighter replacement policy, explains the risk reduction, and outputs valid JSON for immediate apply.</div>
+          <div class="ex-code">aws iam get-policy-version --policy-arn arn:aws:iam::...<br>  --version-id v1 | python policy_agent.py</div>
+        </div>
+        <div class="ex-item" data-level="advanced">
+          <div class="ex-num"><span class="ex-level level-advanced">Advanced</span> Exercise 5.3</div>
+          <div class="ex-title">Automated containment: isolate compromised EC2 on HIGH finding</div>
+          <div class="ex-body">When GuardDuty severity ≥ 7.0, auto-remove the instance from its security group, capture a memory snapshot to S3, revoke active sessions, and page the SOC — all within 90 seconds of the alert.</div>
+        </div>
+        <div class="ex-item" data-level="stretch">
+          <div class="ex-num"><span class="ex-level level-stretch">Stretch</span> Exercise 5.4</div>
+          <div class="ex-title">Continuous compliance agent for SOC 2 controls</div>
+          <div class="ex-body">Build an agent that runs daily, checks all 35 SOC 2 Type II controls across your AWS account using Config Rules, generates a compliance delta report, and opens Jira tickets for newly failed controls.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CAT 06 ── -->
+<div class="cat-card" id="cat-06" data-cloud="aws azure gcp">
+  <div class="cat-card-header" onclick="toggleCard('panel-06','btn-06')">
+    <div class="cat-num-col"><span class="num">06</span><span class="emo">🏥</span></div>
+    <div class="cat-body-col">
+      <div class="cat-title">INDUSTRY-SPECIFIC AGENTS</div>
+      <div class="cat-desc">Domain-aware agents for healthcare, retail, media, and enterprise sales and supply chain — trained on industry vocabularies and compliant with sector-specific regulations.</div>
+      <div class="services-row">
+        <span class="svc svc-aws">HealthLake AI</span>
+        <span class="svc svc-aws">Amazon Personalize</span>
+        <span class="svc svc-azure">Nuance DAX</span>
+        <span class="svc svc-azure">Dynamics 365 Copilot</span>
+        <span class="svc svc-gcp">Vertex AI Healthcare NLP</span>
+      </div>
+    </div>
+    <div class="cat-toggle-col"><button class="toggle-btn" id="btn-06">+</button></div>
+  </div>
+  <div class="cat-panel" id="panel-06">
+    <div class="panel-left">
+      <div class="panel-heading">Architecture Pattern</div>
+      <div class="arch-box">
+        <div class="arch-title">HEALTHCARE AGENT FLOW</div>
+        <div class="arch-row"><span class="arrow">▶</span> Clinical note input → Comprehend Medical <span class="node-label">[NER]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> FHIR R4 entity extraction → HealthLake <span class="node-label">[structure]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> PHI detection → Macie + redaction <span class="node-label">[comply]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Clinical reasoning → Bedrock + SNOMED <span class="node-label">[reason]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Summary → EHR system via SMART on FHIR <span class="node-label">[deliver]</span></div>
+      </div>
+      <div class="panel-heading" style="margin-top:16px">Key Concepts</div>
+      <div style="font-size:10px;color:var(--rule2);line-height:1.8">
+        <div>→ HIPAA / GDPR data handling</div>
+        <div>→ PHI detection and redaction pipelines</div>
+        <div>→ Domain-specific ontologies (SNOMED, ICD-10)</div>
+        <div>→ Personalisation with behavioral signals</div>
+        <div>→ Audit trails for regulated industries</div>
+      </div>
+    </div>
+    <div class="panel-right">
+      <div class="panel-heading">Lab Exercises</div>
+      <div class="ex-list">
+        <div class="ex-item" data-level="beginner">
+          <div class="ex-num"><span class="ex-level level-beginner">Beginner</span> Exercise 6.1</div>
+          <div class="ex-title">Clinical note summariser with PHI redaction</div>
+          <div class="ex-body">Use Amazon Comprehend Medical to extract medical entities from 20 sample notes. Before sending to Bedrock, redact all PHI categories. Generate a one-paragraph clinical summary per note.</div>
+        </div>
+        <div class="ex-item" data-level="intermediate">
+          <div class="ex-num"><span class="ex-level level-intermediate">Intermediate</span> Exercise 6.2</div>
+          <div class="ex-title">Retail personalisation agent with Amazon Personalize</div>
+          <div class="ex-body">Train a Personalize model on synthetic clickstream data. Wire it into a Bedrock agent that generates a personalised product narrative for each user, blending recommendation scores with LLM storytelling.</div>
+        </div>
+        <div class="ex-item" data-level="advanced">
+          <div class="ex-num"><span class="ex-level level-advanced">Advanced</span> Exercise 6.3</div>
+          <div class="ex-title">Supply chain exception agent with real-time alerting</div>
+          <div class="ex-body">Simulate a supply chain event stream. Build an agent that monitors for disruptions, classifies severity, suggests alternative suppliers using a Bedrock Knowledge Base, and sends alerts with ETA impact analysis.</div>
+        </div>
+        <div class="ex-item" data-level="stretch">
+          <div class="ex-num"><span class="ex-level level-stretch">Stretch</span> Exercise 6.4</div>
+          <div class="ex-title">HIPAA-compliant audit agent with HealthLake FHIR queries</div>
+          <div class="ex-body">Build a Bedrock agent that queries HealthLake FHIR R4 resources using natural language. Implement a full HIPAA audit log for every access. Validate against the HIPAA Security Rule §164.312 checklist.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CAT 07 ── -->
+<div class="cat-card" id="cat-07" data-cloud="aws azure gcp">
+  <div class="cat-card-header" onclick="toggleCard('panel-07','btn-07')">
+    <div class="cat-num-col"><span class="num">07</span><span class="emo">🔧</span></div>
+    <div class="cat-body-col">
+      <div class="cat-title">INFRASTRUCTURE &amp; ORCHESTRATION AGENTS</div>
+      <div class="cat-desc">Autonomous cloud ops, auto-healing clusters, FinOps optimization, and cross-cloud governance — agents that keep infrastructure running, lean, and compliant without human paging.</div>
+      <div class="services-row">
+        <span class="svc svc-aws">EventBridge Ops Agents</span>
+        <span class="svc svc-aws">Auto-Healing EKS</span>
+        <span class="svc svc-aws">Cost Explorer + LLM</span>
+        <span class="svc svc-azure">Azure Automanage AI</span>
+        <span class="svc svc-gcp">AutoOps for GKE</span>
+        <span class="svc svc-gcp">FinOps Copilot</span>
+      </div>
+    </div>
+    <div class="cat-toggle-col"><button class="toggle-btn" id="btn-07">+</button></div>
+  </div>
+  <div class="cat-panel" id="panel-07">
+    <div class="panel-left">
+      <div class="panel-heading">Architecture Pattern</div>
+      <div class="arch-box">
+        <div class="arch-title">AUTO-HEALING FLOW</div>
+        <div class="arch-row"><span class="arrow">▶</span> CloudWatch alarm → EventBridge rule <span class="node-label">[detect]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Lambda → fetch metrics + pod logs <span class="node-label">[gather]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Bedrock agent → root cause classify <span class="node-label">[diagnose]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Remediation: restart / scale / rollback <span class="node-label">[heal]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Post-incident report → Confluence <span class="node-label">[document]</span></div>
+      </div>
+      <div class="panel-heading" style="margin-top:16px">Key Concepts</div>
+      <div style="font-size:10px;color:var(--rule2);line-height:1.8">
+        <div>→ Prometheus alert → agent runbook execution</div>
+        <div>→ EKS pod failure classification + kubectl fix</div>
+        <div>→ Cost anomaly detection + rightsizing</div>
+        <div>→ Reserved Instance purchasing agent</div>
+        <div>→ Cross-cloud cost normalization</div>
+      </div>
+    </div>
+    <div class="panel-right">
+      <div class="panel-heading">Lab Exercises</div>
+      <div class="ex-list">
+        <div class="ex-item" data-level="beginner">
+          <div class="ex-num"><span class="ex-level level-beginner">Beginner</span> Exercise 7.1</div>
+          <div class="ex-title">CloudWatch alarm → LLM-generated runbook executor</div>
+          <div class="ex-body">Create a Lambda that receives CloudWatch alarm payloads. Pass the alarm context to a Bedrock agent that selects and executes the right Systems Manager Automation document to remediate.</div>
+        </div>
+        <div class="ex-item" data-level="intermediate">
+          <div class="ex-num"><span class="ex-level level-intermediate">Intermediate</span> Exercise 7.2</div>
+          <div class="ex-title">FinOps agent: cost anomaly detection + rightsizing</div>
+          <div class="ex-body">Pull Cost Explorer data daily. Build a Bedrock agent that identifies services with cost spikes &gt;20% MoM, recommends rightsizing actions, and estimates monthly savings for each recommendation.</div>
+          <div class="ex-code">aws ce get-cost-and-usage \<br>&nbsp;&nbsp;--time-period Start=2025-01-01,End=2025-02-01 \<br>&nbsp;&nbsp;--granularity MONTHLY --metrics BlendedCost</div>
+        </div>
+        <div class="ex-item" data-level="advanced">
+          <div class="ex-num"><span class="ex-level level-advanced">Advanced</span> Exercise 7.3</div>
+          <div class="ex-title">EKS self-healing: OOMKilled pod detection and resolution</div>
+          <div class="ex-body">Monitor EKS for OOMKilled events via a Prometheus + AlertManager webhook. Route to a Bedrock agent that reads the deployment manifest, calculates safe memory limits, patches the deployment, and confirms pod recovery.</div>
+        </div>
+        <div class="ex-item" data-level="stretch">
+          <div class="ex-num"><span class="ex-level level-stretch">Stretch</span> Exercise 7.4</div>
+          <div class="ex-title">Chaos engineering agent: inject and auto-recover faults</div>
+          <div class="ex-body">Use AWS FIS to inject faults on a schedule. Build a companion Bedrock agent that monitors the system during each experiment, detects when recovery thresholds are missed, and triggers compensating actions autonomously.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CAT 08 ── -->
+<div class="cat-card" id="cat-08" data-cloud="oss aws azure gcp">
+  <div class="cat-card-header" onclick="toggleCard('panel-08','btn-08')">
+    <div class="cat-num-col"><span class="num">08</span><span class="emo">🌐</span></div>
+    <div class="cat-body-col">
+      <div class="cat-title">CROSS-CLOUD &amp; AGNOSTIC PATTERNS</div>
+      <div class="cat-desc">Framework-level orchestration patterns that operate across any cloud provider — portable agent architectures built on open standards that deploy equally well on AWS, Azure, or GCP.</div>
+      <div class="services-row">
+        <span class="svc svc-oss">LangChain</span>
+        <span class="svc svc-oss">LangGraph</span>
+        <span class="svc svc-oss">AutoGen</span>
+        <span class="svc svc-oss">CrewAI</span>
+        <span class="svc svc-oss">Self-Healing DevSecOps</span>
+        <span class="svc svc-aws">Bedrock (backend)</span>
+        <span class="svc svc-azure">Azure OpenAI (backend)</span>
+        <span class="svc svc-gcp">Vertex AI (backend)</span>
+      </div>
+    </div>
+    <div class="cat-toggle-col"><button class="toggle-btn" id="btn-08">+</button></div>
+  </div>
+  <div class="cat-panel" id="panel-08">
+    <div class="panel-left">
+      <div class="panel-heading">Architecture Pattern</div>
+      <div class="arch-box">
+        <div class="arch-title">MULTI-AGENT GRAPH</div>
+        <div class="arch-row"><span class="arrow">▶</span> Supervisor node → route by intent <span class="node-label">[LangGraph]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Specialist agents: Research / Code / Write <span class="node-label">[CrewAI]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Shared state graph → conditional edges <span class="node-label">[state]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Any LLM backend via provider abstraction <span class="node-label">[agnostic]</span></div>
+        <div class="arch-row"><span class="arrow">▶</span> Deploy: Docker → ECS / AKS / Cloud Run <span class="node-label">[portable]</span></div>
+      </div>
+      <div class="panel-heading" style="margin-top:16px">Key Concepts</div>
+      <div style="font-size:10px;color:var(--rule2);line-height:1.8">
+        <div>→ LangGraph state machines with typed nodes</div>
+        <div>→ CrewAI role-based agent teams</div>
+        <div>→ AutoGen conversation patterns</div>
+        <div>→ Provider abstraction via LiteLLM</div>
+        <div>→ Containerised deployment on any cloud</div>
+      </div>
+    </div>
+    <div class="panel-right">
+      <div class="panel-heading">Lab Exercises</div>
+      <div class="ex-list">
+        <div class="ex-item" data-level="beginner">
+          <div class="ex-num"><span class="ex-level level-beginner">Beginner</span> Exercise 8.1</div>
+          <div class="ex-title">LangGraph supervisor routing three specialist agents</div>
+          <div class="ex-body">Build a LangGraph graph with a Supervisor node that routes to one of three sub-agents: ResearchAgent (RAG), CodeAgent (code generation), WriterAgent (copywriting). Test with 5 mixed prompts.</div>
+          <div class="ex-code">graph = StateGraph(AgentState)<br>graph.add_node("supervisor", supervisor_fn)<br>graph.add_conditional_edges("supervisor", route_fn)</div>
+        </div>
+        <div class="ex-item" data-level="intermediate">
+          <div class="ex-num"><span class="ex-level level-intermediate">Intermediate</span> Exercise 8.2</div>
+          <div class="ex-title">CrewAI product launch team: 4 agents, one goal</div>
+          <div class="ex-body">Define a Product Manager, Market Researcher, Copywriter, and Technical Writer crew. Give them a single goal: "Launch brief for a new AI monitoring SaaS." Observe inter-agent communication and final deliverable.</div>
+        </div>
+        <div class="ex-item" data-level="advanced">
+          <div class="ex-num"><span class="ex-level level-advanced">Advanced</span> Exercise 8.3</div>
+          <div class="ex-title">Cross-cloud agent: same code, three LLM backends</div>
+          <div class="ex-body">Build one agent using LiteLLM as the provider abstraction. Deploy to three clouds using Docker + Terraform. Route 100 test prompts: 33 to Bedrock, 33 to Azure OpenAI, 34 to Vertex AI. Compare cost and latency.</div>
+        </div>
+        <div class="ex-item" data-level="stretch">
+          <div class="ex-num"><span class="ex-level level-stretch">Stretch</span> Exercise 8.4</div>
+          <div class="ex-title">Self-healing DevSecOps pipeline with AutoGen</div>
+          <div class="ex-body">Build an AutoGen group chat: SecurityAuditor, CodeFixer, DeploymentManager, and HumanProxy agents. Inject a CVE into a Docker image. Watch the agents debate, fix, rebuild, and re-scan — with human approval gate.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /cards-grid -->
+
+<!-- ════ METHODOLOGY ════ -->
+<div id="methodology" class="method-section">
+  <div class="section-header" style="border-top:none;padding:0 0 0 0;margin-bottom:0">
+    <div class="section-title" style="color:rgba(255,255,255,.9)">METHODOLOGY</div>
+    <div class="section-rule" style="background:rgba(255,255,255,.1)"></div>
+    <div class="section-count" style="color:rgba(255,255,255,.3)">HOW AGENTFORGE WORKS</div>
+  </div>
+  <div class="method-grid">
+    <div class="method-item">
+      <div class="method-icon">01</div>
+      <div class="method-title">Concept First</div>
+      <div class="method-body">Every lab starts with a one-paragraph mental model. You understand why before you touch a line of code. No cargo-culting patterns you can't explain.</div>
+    </div>
+    <div class="method-item">
+      <div class="method-icon">02</div>
+      <div class="method-title">Build From Scratch</div>
+      <div class="method-body">Start with raw SDKs and cloud APIs. Only reach for frameworks once you can implement the primitive. This ensures you know what the abstraction is hiding.</div>
+    </div>
+    <div class="method-item">
+      <div class="method-icon">03</div>
+      <div class="method-title">Observe Everything</div>
+      <div class="method-body">Structured JSON logging on every invocation, tool call, memory read, and cost event. If it isn't logged it doesn't count. Production systems must be observable.</div>
+    </div>
+    <div class="method-item">
+      <div class="method-icon">04</div>
+      <div class="method-title">Deploy With Terraform</div>
+      <div class="method-body">Every lab has a matching Terraform module. Network, security, and application layers are always separate. Infrastructure is code and code is reviewed.</div>
+    </div>
+    <div class="method-item">
+      <div class="method-icon">05</div>
+      <div class="method-title">Progressive Difficulty</div>
+      <div class="method-body">Four exercises per category: Beginner → Intermediate → Advanced → Stretch. You can stop at any tier. The Stretch exercises are genuinely hard and will teach you the most.</div>
+    </div>
+    <div class="method-item">
+      <div class="method-icon">06</div>
+      <div class="method-title">Cloud-Agnostic Core</div>
+      <div class="method-body">AgentBase works with any Bedrock-compatible model. Swap the client for any cloud provider. The patterns transfer. Vendor lock-in is architectural, not mandatory.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ PROJECT STRUCTURE ════ -->
+<div id="structure" class="structure-section">
+  <div class="section-header" style="padding:0 0 24px 0;border-top:none">
+    <div class="section-title">PROJECT STRUCTURE</div>
+    <div class="section-rule"></div>
+    <div class="section-count">GITHUB REPOSITORY LAYOUT</div>
+  </div>
+  <div class="tree">
+<span class="dir">agentforge/</span>
+├── <span class="dir">core/</span>
+│   ├── <span class="file">agent_base.py</span>           <span class="comment"># shared ReAct loop, tool registry, cost tracking</span>
+│   └── <span class="file">__init__.py</span>
+├── <span class="dir">labs/</span>
+│   ├── <span class="lab">lab_01_first_contact/</span>
+│   │   ├── <span class="file">agent.py</span>               <span class="comment"># raw Bedrock Converse API, 3 tools, ReAct loop</span>
+│   │   └── <span class="file">requirements.txt</span>
+│   ├── <span class="lab">lab_02_persistent_mind/</span>
+│   │   ├── <span class="file">agent.py</span>               <span class="comment"># STM ring buffer + DynamoDB LTM + vector semantic</span>
+│   │   └── <span class="file">requirements.txt</span>
+│   ├── <span class="lab">lab_03_knowledge_vault/</span>
+│   │   ├── <span class="file">agent.py</span>               <span class="comment"># RAG pipeline: Titan Embeddings + Chroma + re-rank</span>
+│   │   └── <span class="file">requirements.txt</span>
+│   ├── <span class="lab">lab_04_the_collective/</span>
+│   │   ├── <span class="file">agent.py</span>               <span class="comment"># multi-agent: Supervisor + Research + Code + Write</span>
+│   │   └── <span class="file">requirements.txt</span>
+│   └── <span class="lab">lab_05_mission_control/</span>
+│       ├── <span class="file">agent.py</span>               <span class="comment"># full production agent: streaming + eval pipeline</span>
+│       └── <span class="file">requirements.txt</span>
+├── <span class="dir">infrastructure/</span>
+│   ├── <span class="dir">terraform/</span>
+│   │   ├── <span class="dir">modules/</span>
+│   │   │   ├── <span class="dir">runtime/</span>               <span class="comment"># Lambda + API Gateway + IAM</span>
+│   │   │   ├── <span class="dir">datastore/</span>             <span class="comment"># DynamoDB + S3 + KMS + OpenSearch</span>
+│   │   │   └── <span class="dir">gateway/</span>               <span class="comment"># VPC + subnets + NAT + VPC endpoints</span>
+│   │   └── <span class="dir">environments/</span>
+│   │       ├── <span class="dir">dev/</span>                   <span class="comment"># main.tf, variables.tf, outputs.tf</span>
+│   │       └── <span class="dir">prod/</span>
+│   └── <span class="dir">docker/</span>
+│       └── <span class="file">Dockerfile</span>             <span class="comment"># containerised agent runtime</span>
+├── <span class="dir">tests/</span>
+│   ├── <span class="file">test_agent_base.py</span>
+│   └── <span class="file">test_memory.py</span>
+├── <span class="dir">portal/</span>
+│   └── <span class="file">index.html</span>             <span class="comment"># this file — deployable to GitHub Pages</span>
+├── <span class="file">.github/workflows/</span>
+│   └── <span class="file">deploy.yml</span>             <span class="comment"># lint → test → terraform plan → apply</span>
+├── <span class="file">.env.example</span>
+├── <span class="file">README.md</span>
+└── <span class="file">LICENSE</span>
+  </div>
+</div>
+
+<!-- ════ BEST PRACTICES ════ -->
+<div id="bestpractices" class="bp-section">
+  <div class="section-header" style="padding:0 0 24px 0;border-top:none">
+    <div class="section-title">15 PRODUCTION BEST PRACTICES</div>
+    <div class="section-rule"></div>
+  </div>
+  <div class="bp-grid">
+    <div class="bp-item"><div class="bp-item-num">01</div><div class="bp-item-title">Model Selection</div><div class="bp-item-body">Smallest capable model. Benchmark before production.</div></div>
+    <div class="bp-item"><div class="bp-item-num">02</div><div class="bp-item-title">Prompt Engineering</div><div class="bp-item-body">System roles, few-shot examples, chain-of-thought.</div></div>
+    <div class="bp-item"><div class="bp-item-num">03</div><div class="bp-item-title">RAG Architecture</div><div class="bp-item-body">Hybrid search, 512-token chunks, re-ranking.</div></div>
+    <div class="bp-item"><div class="bp-item-num">04</div><div class="bp-item-title">Memory Management</div><div class="bp-item-body">Three tiers: STM ring, DynamoDB LTM, vector.</div></div>
+    <div class="bp-item"><div class="bp-item-num">05</div><div class="bp-item-title">Tool Design</div><div class="bp-item-body">Typed schemas, output validation, loop guards.</div></div>
+    <div class="bp-item"><div class="bp-item-num">06</div><div class="bp-item-title">Evaluation</div><div class="bp-item-body">RAGAS metrics, ground-truth sets, drift alerts.</div></div>
+    <div class="bp-item"><div class="bp-item-num">07</div><div class="bp-item-title">Safety Guardrails</div><div class="bp-item-body">PII redaction, content filters, prompt injection.</div></div>
+    <div class="bp-item"><div class="bp-item-num">08</div><div class="bp-item-title">Cost Optimization</div><div class="bp-item-body">Caching, token budgets, PAY_PER_REQUEST.</div></div>
+    <div class="bp-item"><div class="bp-item-num">09</div><div class="bp-item-title">Latency</div><div class="bp-item-body">Streaming, async, embedding cache, warm starts.</div></div>
+    <div class="bp-item"><div class="bp-item-num">10</div><div class="bp-item-title">Observability</div><div class="bp-item-body">Structured JSON logs, X-Ray traces, alarms.</div></div>
+    <div class="bp-item"><div class="bp-item-num">11</div><div class="bp-item-title">Security</div><div class="bp-item-body">KMS CMK, VPC endpoints, CloudTrail, least-priv.</div></div>
+    <div class="bp-item"><div class="bp-item-num">12</div><div class="bp-item-title">Scalable Deployment</div><div class="bp-item-body">Terraform modules, multi-AZ, auto-scaling.</div></div>
+    <div class="bp-item"><div class="bp-item-num">13</div><div class="bp-item-title">Responsible AI</div><div class="bp-item-body">Bias testing, explainability, compliance audit.</div></div>
+    <div class="bp-item"><div class="bp-item-num">14</div><div class="bp-item-title">Data Management</div><div class="bp-item-body">PITR, versioning, TTL, data lineage tracking.</div></div>
+    <div class="bp-item"><div class="bp-item-num">15</div><div class="bp-item-title">Human-in-the-Loop</div><div class="bp-item-body">Priority escalation, approval gates, feedback.</div></div>
+  </div>
+</div>
+
+<footer>
+  <div>
+    <strong>AgentForge</strong> — AI Agent Engineering Curriculum
+    <span style="margin:0 8px">·</span>
+    Built by <strong>Kehinde Ogunlowo</strong> (<a href="https://github.com/kogunlowo123">kogunlowo123</a>)
+  </div>
+  <div>Build With AgentCore Challenge · March 2025 · <a href="#">MIT License</a></div>
+</footer>
+
+</main>
+</div><!-- /shell -->
+
+<script>
+function toggleCard(panelId, btnId) {
+  const panel = document.getElementById(panelId);
+  const btn   = document.getElementById(btnId);
+  const isOpen = panel.classList.contains('open');
+  document.querySelectorAll('.cat-panel').forEach(p => p.classList.remove('open'));
+  document.querySelectorAll('.toggle-btn').forEach(b => { b.classList.remove('open'); b.textContent = '+'; });
+  if (!isOpen) {
+    panel.classList.add('open');
+    btn.classList.add('open');
+    btn.textContent = '−';
+    setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+  }
+}
+
+function filterCards(cloud, el) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active','active-aws','active-azure','active-gcp','active-oss'));
+  el.classList.add('active' + (cloud !== 'all' ? '-' + cloud : ''));
+  if (cloud === 'all') el.classList.add('active');
+  document.querySelectorAll('.cat-card').forEach(card => {
+    const clouds = card.dataset.cloud || '';
+    card.style.display = (cloud === 'all' || clouds.includes(cloud)) ? '' : 'none';
+  });
+}
+
+function setActive(el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+}
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      document.querySelectorAll('.nav-item').forEach(n => {
+        if (n.getAttribute('href') === '#' + id) {
+          document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+          n.classList.add('active');
+        }
+      });
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('[id^="cat-"]').forEach(el => observer.observe(el));
+['methodology','structure','bestpractices'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) observer.observe(el);
+});
+</script>
+</body>
+</html>
