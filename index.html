@@ -200,6 +200,26 @@ aside::-webkit-scrollbar{width:4px}
 aside::-webkit-scrollbar-track{background:transparent}
 aside::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
 
+
+/* === MULTI-CLOUD BLOCKS === */
+.multicloud-section{margin-top:20px;border:1px solid rgba(255,255,255,.08);border-radius:4px;overflow:hidden}
+.multicloud-tabs{display:flex;border-bottom:1px solid var(--rule)}
+.mc-tab{flex:1;padding:8px 12px;font-size:9px;letter-spacing:.08em;text-transform:uppercase;text-align:center;cursor:pointer;border:none;background:transparent;color:var(--rule2);font-family:var(--mono);transition:all .15s;border-bottom:2px solid transparent}
+.mc-tab:hover{background:var(--paper2);color:var(--ink)}
+.mc-tab.active{color:var(--ink);font-weight:600}
+.mc-tab[data-cloud="azure"].active{border-bottom-color:var(--azure);color:var(--azure)}
+.mc-tab[data-cloud="gcp"].active{border-bottom-color:var(--gcp);color:var(--gcp)}
+.mc-tab[data-cloud="aws"].active{border-bottom-color:var(--aws);color:var(--aws)}
+.mc-panel{display:none;padding:16px}
+.mc-panel.active{display:block}
+.mc-panel h5{font-size:10px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;font-weight:600}
+.mc-panel[data-cloud="azure"] h5{color:var(--azure)}
+.mc-panel[data-cloud="gcp"] h5{color:var(--gcp)}
+.mc-panel[data-cloud="aws"] h5{color:var(--aws)}
+.mc-panel p{font-size:10px;color:var(--rule2);line-height:1.8;margin-bottom:8px}
+.mc-svc-list{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0}
+.mc-svc-list .svc{font-size:9px;padding:2px 7px;border-radius:2px;font-weight:500}
+
 /* === PLAYBOOK STYLES === */
 .prereqs-block{background:#1a1a1a;color:#e0ddd5;padding:18px 20px;border-radius:3px;margin-bottom:18px;border-left:3px solid var(--accent)}
 .prereqs-title{font-family:var(--display);font-size:16px;color:var(--accent);margin-bottom:8px;letter-spacing:.05em}
@@ -693,6 +713,66 @@ def emit_telemetry(session_id, intent, confidence,
   <div class="validate-block"><strong>VALIDATE:</strong> Manually trigger alarm state with <code>aws cloudwatch set-alarm-state</code> and confirm SNS notification arrives in Slack within 60 seconds.</div>
   <div class="pitfall-callout"><span class="pitfall-icon">⚠</span><span class="pitfall-text"><strong>PITFALL:</strong> Setting evaluation-periods to 1 causes alarm flapping on transient spikes. Always require 2 consecutive breach periods.</span></div>
 </div>
+
+<div class="multicloud-section">
+  <div class="multicloud-tabs">
+    <button class="mc-tab active" data-cloud="azure" onclick="switchMcTab('mc-01','azure',this)">Azure Equivalent</button>
+    <button class="mc-tab" data-cloud="gcp" onclick="switchMcTab('mc-01','gcp',this)">GCP Equivalent</button>
+  </div>
+  <div id="mc-01-azure" class="mc-panel active" data-cloud="azure">
+    <h5>Azure Implementation Path</h5>
+<p>Replace Amazon Lex with <strong>Azure AI Bot Service</strong> + <strong>Microsoft Copilot Studio</strong> for intent classification and dialogue management. Use <strong>Azure AI Language (CLU)</strong> for custom NLU models with the same intent taxonomy. Session state moves from DynamoDB to <strong>Cosmos DB</strong> (partition key: sessionId). RAG retrieval uses <strong>Azure AI Search</strong> (vector + hybrid) with <strong>Azure OpenAI Embeddings</strong>. LLM generation swaps to <strong>Azure OpenAI GPT-4</strong>. Sentiment analysis via <strong>Azure AI Language Sentiment</strong>. Omnichannel delivery through <strong>Teams</strong>, <strong>Power Virtual Agents web chat</strong>, and <strong>Dynamics 365 Contact Center</strong> for voice + human hand-off. Guardrails via <strong>Azure AI Content Safety</strong>.</p>
+<div class="mc-svc-list">
+  <span class="svc svc-azure">Azure AI Bot Service</span>
+  <span class="svc svc-azure">Copilot Studio</span>
+  <span class="svc svc-azure">Azure AI Language (CLU)</span>
+  <span class="svc svc-azure">Cosmos DB</span>
+  <span class="svc svc-azure">Azure AI Search</span>
+  <span class="svc svc-azure">Azure OpenAI</span>
+  <span class="svc svc-azure">Azure AI Content Safety</span>
+  <span class="svc svc-azure">Dynamics 365 Contact Center</span>
+</div>
+<div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div><pre><code>az bot create --resource-group agentforge-rg \
+  --name AgentForgeCopilot --kind webapp \
+  --sku S1 --location eastus
+
+az cognitiveservices account create \
+  --name agentforge-language \
+  --resource-group agentforge-rg \
+  --kind TextAnalytics --sku S \
+  --location eastus
+
+az search service create \
+  --name agentforge-search \
+  --resource-group agentforge-rg \
+  --sku standard --partition-count 1</code></pre></div>
+  </div>
+  <div id="mc-01-gcp" class="mc-panel" data-cloud="gcp">
+    <h5>GCP Implementation Path</h5>
+<p>Replace Amazon Lex with <strong>Dialogflow CX</strong> for intent classification with advanced flow-based conversation design. Session state in <strong>Firestore</strong> (document: sessions/{sessionId}). RAG retrieval via <strong>Vertex AI Search</strong> (vector + keyword hybrid) with <strong>Vertex AI Embeddings</strong>. LLM generation with <strong>Gemini Pro</strong> via Vertex AI. Sentiment analysis through <strong>Cloud Natural Language API</strong>. Omnichannel: <strong>Dialogflow CX Messenger</strong> (web), <strong>Dialogflow CX Phone Gateway</strong> (voice), and <strong>Google Chat</strong> integration. Content filtering via <strong>Vertex AI Safety Filters</strong>. Human hand-off via <strong>Contact Center AI (CCAI)</strong>.</p>
+<div class="mc-svc-list">
+  <span class="svc svc-gcp">Dialogflow CX</span>
+  <span class="svc svc-gcp">Firestore</span>
+  <span class="svc svc-gcp">Vertex AI Search</span>
+  <span class="svc svc-gcp">Vertex AI (Gemini Pro)</span>
+  <span class="svc svc-gcp">Cloud Natural Language</span>
+  <span class="svc svc-gcp">Contact Center AI</span>
+  <span class="svc svc-gcp">Google Chat</span>
+</div>
+<div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div><pre><code>gcloud dialogflow cx agents create \
+  --display-name="AgentForgeCopilot" \
+  --location=us-central1 \
+  --default-language-code=en \
+  --time-zone="America/New_York"
+
+gcloud ai endpoints create \
+  --display-name=agentforge-embedding \
+  --region=us-central1
+
+gcloud alpha contact-center-insights \
+  operations list --location=us-central1</code></pre></div>
+  </div>
+</div>
 <div class="production-checklist" data-node="01"><div class="checklist-title">PRODUCTION CHECKLIST — NODE 01</div>
 <label class="check-item"><input type="checkbox" data-key="node01-1"> Intent taxonomy reviewed and signed off by domain SME</label>
 <label class="check-item"><input type="checkbox" data-key="node01-2"> All slot types defined as custom types (no AMAZON.AlphaNumeric for business entities)</label>
@@ -709,7 +789,14 @@ def emit_telemetry(session_id, intent, confidence,
 </div>
       <div class="panel-heading" style="margin-top:16px">Reference Docs &amp; Node Links</div>
       <div class="ref-links">
-        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/lexv2/latest/dg/what-is.html" target="_blank">Amazon Lex V2 Developer Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/lexv2/latest/dg/what-is.html" target="_blank">Amazon Lex V2 Developer Guide</a>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/ai-services/language-service/conversational-language-understanding/overview" target="_blank">Azure CLU (Conversational Language Understanding)</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/cosmos-db/" target="_blank">Azure Cosmos DB Documentation</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/ai-services/content-safety/" target="_blank">Azure AI Content Safety</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/dialogflow/cx/docs/concept/agent" target="_blank">Dialogflow CX Agent Design</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/natural-language/docs/analyzing-sentiment" target="_blank">Cloud Natural Language Sentiment Analysis</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/contact-center/ccai-platform/docs" target="_blank">Contact Center AI (CCAI) Platform</a></div>
+      </div>
         <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/amazonq/latest/qbusiness-ug/what-is.html" target="_blank">Amazon Q Business User Guide</a></div>
         <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/connect/latest/adminguide/what-is-amazon-connect.html" target="_blank">Amazon Connect Admin Guide</a></div>
         <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/comprehend/latest/dg/what-is.html" target="_blank">Amazon Comprehend — Sentiment Analysis</a></div>
@@ -1129,6 +1216,65 @@ def evaluate_agent(test_cases):
   <div class="validate-block"><strong>VALIDATE:</strong> Run evaluation and confirm tool_accuracy_pct &gt;= 80% before approving any production deployment.</div>
   <div class="pitfall-callout"><span class="pitfall-icon">⚠</span><span class="pitfall-text"><strong>PITFALL:</strong> Evaluating only happy-path prompts masks failure modes. Include at least 10 adversarial test cases in every evaluation run.</span></div>
 </div>
+
+<div class="multicloud-section">
+  <div class="multicloud-tabs">
+    <button class="mc-tab active" data-cloud="azure" onclick="switchMcTab('mc-02','azure',this)">Azure Equivalent</button>
+    <button class="mc-tab" data-cloud="gcp" onclick="switchMcTab('mc-02','gcp',this)">GCP Equivalent</button>
+  </div>
+  <div id="mc-02-azure" class="mc-panel active" data-cloud="azure">
+    <h5>Azure Implementation Path</h5>
+<p>Replace Bedrock Agents with <strong>Azure AI Agent Service</strong> (formerly Azure AI Foundry Agents) for ReAct-style autonomous task execution. Action Groups map to <strong>Azure Functions</strong> with OpenAPI tool definitions. Knowledge Base equivalent: <strong>Azure AI Search</strong> with <strong>Azure OpenAI Embeddings</strong>. Orchestration for deterministic branching via <strong>Azure Logic Apps</strong> or <strong>Durable Functions</strong>. Guardrails via <strong>Azure AI Content Safety</strong> + <strong>Responsible AI tools</strong>. Event-driven triggers through <strong>Event Grid</strong> → <strong>Azure Functions</strong>. Session memory in <strong>Cosmos DB</strong>.</p>
+<div class="mc-svc-list">
+  <span class="svc svc-azure">Azure AI Agent Service</span>
+  <span class="svc svc-azure">Azure Functions</span>
+  <span class="svc svc-azure">Azure AI Search</span>
+  <span class="svc svc-azure">Azure OpenAI</span>
+  <span class="svc svc-azure">Logic Apps</span>
+  <span class="svc svc-azure">Event Grid</span>
+  <span class="svc svc-azure">Azure AI Content Safety</span>
+  <span class="svc svc-azure">Cosmos DB</span>
+</div>
+<div class="code-block"><div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div><pre><code>from azure.ai.projects import AIProjectClient
+from azure.identity import DefaultAzureCredential
+
+client = AIProjectClient(
+    credential=DefaultAzureCredential(),
+    endpoint="https://agentforge.openai.azure.com")
+
+agent = client.agents.create_agent(
+    model="gpt-4",
+    name="AgentForgeTaskAgent",
+    instructions="You are an enterprise task agent...",
+    tools=[{"type": "function", "function": {
+        "name": "create_event",
+        "parameters": {...}}}])</code></pre></div>
+  </div>
+  <div id="mc-02-gcp" class="mc-panel" data-cloud="gcp">
+    <h5>GCP Implementation Path</h5>
+<p>Replace Bedrock Agents with <strong>Vertex AI Agent Builder</strong> for autonomous agent creation with tool-use. Action Groups map to <strong>Cloud Functions</strong> (2nd gen) with function declarations. Knowledge Base via <strong>Vertex AI Search</strong> (RAG engine). Orchestration via <strong>Cloud Workflows</strong> for deterministic steps. Event-driven triggers through <strong>Eventarc</strong> → <strong>Cloud Functions</strong>. Guardrails via <strong>Vertex AI Safety Settings</strong>. Session state in <strong>Firestore</strong>.</p>
+<div class="mc-svc-list">
+  <span class="svc svc-gcp">Vertex AI Agent Builder</span>
+  <span class="svc svc-gcp">Cloud Functions</span>
+  <span class="svc svc-gcp">Vertex AI Search</span>
+  <span class="svc svc-gcp">Vertex AI (Gemini)</span>
+  <span class="svc svc-gcp">Cloud Workflows</span>
+  <span class="svc svc-gcp">Eventarc</span>
+  <span class="svc svc-gcp">Firestore</span>
+</div>
+<div class="code-block"><div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div><pre><code>from vertexai.preview import reasoning_engines
+
+agent = reasoning_engines.LangchainAgent(
+    model="gemini-1.5-pro",
+    tools=[create_event, get_availability],
+    agent_executor_kwargs={
+        "return_intermediate_steps": True})
+
+remote_agent = reasoning_engines.ReasoningEngine.create(
+    agent, display_name="AgentForgeTaskAgent",
+    requirements=["google-cloud-aiplatform"])</code></pre></div>
+  </div>
+</div>
 <div class="production-checklist" data-node="02"><div class="checklist-title">PRODUCTION CHECKLIST — NODE 02</div>
 <label class="check-item"><input type="checkbox" data-key="node02-1"> All Action Group OpenAPI schemas validated with a linter</label>
 <label class="check-item"><input type="checkbox" data-key="node02-2"> Lambda handlers return structured error bodies (never raise exceptions)</label>
@@ -1145,7 +1291,14 @@ def evaluate_agent(test_cases):
 </div>
       <div class="panel-heading" style="margin-top:16px">Reference Docs &amp; Node Links</div>
       <div class="ref-links">
-        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html" target="_blank">Amazon Bedrock Agents User Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html" target="_blank">Amazon Bedrock Agents User Guide</a>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/function-calling" target="_blank">Azure OpenAI Function Calling</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/event-grid/overview" target="_blank">Azure Event Grid Documentation</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview" target="_blank">Azure Durable Functions</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/function-calling" target="_blank">Vertex AI Function Calling</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/eventarc/docs" target="_blank">Google Eventarc Documentation</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/workflows/docs" target="_blank">Google Cloud Workflows</a></div>
+      </div>
         <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html" target="_blank">Amazon Bedrock AgentCore Developer Guide</a></div>
         <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html" target="_blank">AWS Step Functions Developer Guide</a></div>
         <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/lambda/latest/dg/welcome.html" target="_blank">AWS Lambda Developer Guide</a></div>
@@ -1639,6 +1792,70 @@ EOF</code></pre></div>
   <div class="validate-block"><strong>VALIDATE:</strong> Open the CloudWatch dashboard and confirm all 4 widgets render with data from the last 24 hours.</div>
   <div class="pitfall-callout"><span class="pitfall-icon">⚠</span><span class="pitfall-text"><strong>PITFALL:</strong> Not setting the Period correctly causes metrics to aggregate incorrectly. Use 86400 for daily counts, 300 for latency.</span></div>
 </div>
+
+<div class="multicloud-section">
+  <div class="multicloud-tabs">
+    <button class="mc-tab active" data-cloud="azure" onclick="switchMcTab('mc-03','azure',this)">Azure Equivalent</button>
+    <button class="mc-tab" data-cloud="gcp" onclick="switchMcTab('mc-03','gcp',this)">GCP Equivalent</button>
+  </div>
+  <div id="mc-03-azure" class="mc-panel active" data-cloud="azure">
+    <h5>Azure Implementation Path</h5>
+<p>Replace GitHub Actions with <strong>Azure Pipelines</strong> for CI/CD triggers on PRs. Code analysis via <strong>Azure DevOps AI-assisted reviews</strong>. IaC drift detection with <strong>Terraform Cloud</strong> or <strong>Azure Resource Graph</strong> queries. Security findings from <strong>Microsoft Defender for Cloud</strong> (replacing Security Hub). Remediation PRs via <strong>Azure Repos</strong> API. Approval gates via <strong>Azure Pipelines Environments</strong> with manual approval checks. Incident alerting via <strong>Azure Monitor</strong> + <strong>Logic Apps</strong> integration.</p>
+<div class="mc-svc-list">
+  <span class="svc svc-azure">Azure Pipelines</span>
+  <span class="svc svc-azure">Azure DevOps</span>
+  <span class="svc svc-azure">Defender for Cloud</span>
+  <span class="svc svc-azure">Azure Resource Graph</span>
+  <span class="svc svc-azure">Azure Monitor</span>
+  <span class="svc svc-azure">Azure OpenAI</span>
+</div>
+<div class="code-block"><div class="code-header"><span class="code-lang">yaml</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div><pre><code># azure-pipelines.yml
+trigger:
+  branches:
+    include: [main]
+pr:
+  branches:
+    include: [main]
+
+stages:
+  - stage: AIReview
+    jobs:
+      - job: CodeReview
+        steps:
+          - script: |
+              python review_agent.py \
+                --provider azure \
+                --model gpt-4
+            env:
+              AZURE_OPENAI_KEY: $(AZURE_KEY)</code></pre></div>
+  </div>
+  <div id="mc-03-gcp" class="mc-panel" data-cloud="gcp">
+    <h5>GCP Implementation Path</h5>
+<p>Replace GitHub Actions with <strong>Cloud Build</strong> triggers on PRs. Code analysis via <strong>Gemini Code Assist</strong>. IaC drift detection using <strong>Cloud Asset Inventory</strong> + Terraform. Security findings from <strong>Security Command Center (SCC)</strong>. Approval gates via <strong>Cloud Deploy</strong> approval policies. Incident alerting via <strong>Cloud Monitoring</strong> + <strong>Cloud Alerting</strong>. LLM analysis via <strong>Vertex AI (Gemini Pro)</strong>.</p>
+<div class="mc-svc-list">
+  <span class="svc svc-gcp">Cloud Build</span>
+  <span class="svc svc-gcp">Gemini Code Assist</span>
+  <span class="svc svc-gcp">Security Command Center</span>
+  <span class="svc svc-gcp">Cloud Asset Inventory</span>
+  <span class="svc svc-gcp">Cloud Deploy</span>
+  <span class="svc svc-gcp">Vertex AI (Gemini)</span>
+</div>
+<div class="code-block"><div class="code-header"><span class="code-lang">yaml</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div><pre><code># cloudbuild.yaml
+steps:
+  - name: 'python:3.11'
+    entrypoint: 'python'
+    args: ['review_agent.py', '--provider', 'gcp']
+    secretEnv: ['VERTEX_API_KEY']
+
+  - name: 'hashicorp/terraform'
+    args: ['plan', '-detailed-exitcode']
+
+availableSecrets:
+  secretManager:
+    - versionName: projects/P/secrets/vertex-key/versions/1
+      env: 'VERTEX_API_KEY'</code></pre></div>
+  </div>
+</div>
 <div class="production-checklist" data-node="03"><div class="checklist-title">PRODUCTION CHECKLIST — NODE 03</div>
 <label class="check-item"><input type="checkbox" data-key="node03-1"> GitHub Actions workflow triggers on all PR events (opened, synchronize)</label>
 <label class="check-item"><input type="checkbox" data-key="node03-2"> Code review agent handles diffs up to 12K tokens with graceful truncation</label>
@@ -1655,7 +1872,14 @@ EOF</code></pre></div>
 </div>
       <div class="panel-heading" style="margin-top:16px">Reference Docs &amp; Node Links</div>
       <div class="ref-links">
-        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/what-is.html" target="_blank">Amazon Q Developer User Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/what-is.html" target="_blank">Amazon Q Developer User Guide</a>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/devops/pipelines/" target="_blank">Azure Pipelines Documentation</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/defender-for-cloud/" target="_blank">Microsoft Defender for Cloud</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/governance/resource-graph/" target="_blank">Azure Resource Graph</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/build/docs" target="_blank">Google Cloud Build Documentation</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/security-command-center/docs" target="_blank">Security Command Center Docs</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/deploy/docs" target="_blank">Google Cloud Deploy (CD)</a></div>
+      </div>
         <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html" target="_blank">AWS Security Hub User Guide</a></div>
         <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-automation.html" target="_blank">AWS Systems Manager Automation</a></div>
         <div><span class="ref-tag ref-tag-oss">OSS</span> <a href="https://docs.github.com/en/actions" target="_blank">GitHub Actions Documentation</a></div>
@@ -2155,6 +2379,68 @@ aws cloudwatch put-metric-data \
   <div class="validate-block"><strong>VALIDATE:</strong> Open the dashboard and confirm all widgets render. Trigger a low-faithfulness alarm and verify SNS notification.</div>
   <div class="pitfall-callout"><span class="pitfall-icon">⚠</span><span class="pitfall-text"><strong>PITFALL:</strong> Alerting only on latency misses quality degradation. Always track faithfulness and context_precision as primary quality metrics.</span></div>
 </div>
+
+<div class="multicloud-section">
+  <div class="multicloud-tabs">
+    <button class="mc-tab active" data-cloud="azure" onclick="switchMcTab('mc-04','azure',this)">Azure Equivalent</button>
+    <button class="mc-tab" data-cloud="gcp" onclick="switchMcTab('mc-04','gcp',this)">GCP Equivalent</button>
+  </div>
+  <div id="mc-04-azure" class="mc-panel active" data-cloud="azure">
+    <h5>Azure Implementation Path</h5>
+<p>Replace OpenSearch with <strong>Azure AI Search</strong> (vector + semantic hybrid search). Embeddings via <strong>Azure OpenAI text-embedding-ada-002</strong>. NL-to-SQL targets <strong>Azure Synapse Analytics</strong> or <strong>Azure SQL</strong> with schema from <strong>Azure Purview</strong> (data catalog). BI integration via <strong>Power BI Copilot</strong> for natural language queries on dashboards. Evaluation via <strong>Azure AI Studio</strong> built-in evaluation. Re-ranking via <strong>Azure AI Search semantic ranker</strong> (built-in, no external model needed).</p>
+<div class="mc-svc-list">
+  <span class="svc svc-azure">Azure AI Search</span>
+  <span class="svc svc-azure">Azure OpenAI</span>
+  <span class="svc svc-azure">Azure Synapse</span>
+  <span class="svc svc-azure">Azure Purview</span>
+  <span class="svc svc-azure">Power BI Copilot</span>
+  <span class="svc svc-azure">Microsoft Fabric</span>
+</div>
+<div class="code-block"><div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div><pre><code>from azure.search.documents import SearchClient
+from azure.search.documents.models import VectorizedQuery
+
+vector_query = VectorizedQuery(
+    vector=embed_query(user_question),
+    k_nearest_neighbors=20,
+    fields="content_vector")
+
+results = search_client.search(
+    search_text=user_question,  # BM25 hybrid
+    vector_queries=[vector_query],
+    query_type="semantic",       # built-in re-ranker
+    semantic_configuration_name="default",
+    top=5)</code></pre></div>
+  </div>
+  <div id="mc-04-gcp" class="mc-panel" data-cloud="gcp">
+    <h5>GCP Implementation Path</h5>
+<p>Replace OpenSearch with <strong>Vertex AI Search</strong> (managed RAG with built-in chunking, embedding, and retrieval). Embeddings via <strong>Vertex AI textembedding-gecko</strong>. NL-to-SQL targets <strong>BigQuery</strong> with schema from <strong>Dataplex</strong> (data catalog). BI via <strong>Looker</strong> with <strong>Gemini NLQ</strong> for natural language queries. Built-in evaluation via <strong>Vertex AI Evaluation</strong>. <strong>BigQuery ML</strong> for in-database embedding generation at scale.</p>
+<div class="mc-svc-list">
+  <span class="svc svc-gcp">Vertex AI Search</span>
+  <span class="svc svc-gcp">Vertex AI Embeddings</span>
+  <span class="svc svc-gcp">BigQuery</span>
+  <span class="svc svc-gcp">Dataplex</span>
+  <span class="svc svc-gcp">Looker + Gemini NLQ</span>
+  <span class="svc svc-gcp">BigQuery ML</span>
+</div>
+<div class="code-block"><div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div><pre><code>from google.cloud import discoveryengine_v1
+
+client = discoveryengine_v1.SearchServiceClient()
+request = discoveryengine_v1.SearchRequest(
+    serving_config=f"projects/{PROJECT}/locations/global"
+        f"/collections/default_collection"
+        f"/engines/agentforge-search/servingConfigs/default",
+    query=user_question,
+    page_size=5,
+    content_search_spec={
+        "snippet_spec": {"return_snippet": True},
+        "summary_spec": {
+            "summary_result_count": 5,
+            "include_citations": True,
+            "model_spec": {"version": "gemini-1.5-flash"}
+        }
+    })</code></pre></div>
+  </div>
+</div>
 <div class="production-checklist" data-node="04"><div class="checklist-title">PRODUCTION CHECKLIST — NODE 04</div>
 <label class="check-item"><input type="checkbox" data-key="node04-1"> Chunking strategy documented: 512 tokens, 20% overlap for PDFs, row-based for CSVs</label>
 <label class="check-item"><input type="checkbox" data-key="node04-2"> OpenSearch index uses correct dimension (1024) and distance metric (L2) for Titan v2</label>
@@ -2171,7 +2457,14 @@ aws cloudwatch put-metric-data \
 </div>
       <div class="panel-heading" style="margin-top:16px">Reference Docs &amp; Node Links</div>
       <div class="ref-links">
-        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base.html" target="_blank">Bedrock Knowledge Bases Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base.html" target="_blank">Bedrock Knowledge Bases Guide</a>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/search/search-what-is-azure-search" target="_blank">Azure AI Search Documentation</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/synapse-analytics/" target="_blank">Azure Synapse Analytics</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/purview/" target="_blank">Microsoft Purview Data Catalog</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/generative-ai-app-builder/docs/introduction" target="_blank">Vertex AI Search &amp; Conversation</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/dataplex/docs" target="_blank">Google Dataplex (Data Catalog)</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/bigquery/docs/bigqueryml-intro" target="_blank">BigQuery ML Embeddings</a></div>
+      </div>
         <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless.html" target="_blank">OpenSearch Serverless Docs</a></div>
         <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/athena/latest/ug/what-is.html" target="_blank">Amazon Athena User Guide</a></div>
         <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/glue/latest/dg/catalog-and-crawler.html" target="_blank">AWS Glue Data Catalog</a></div>
@@ -2777,6 +3070,57 @@ Write a professional report with:
   <div class="validate-block"><strong>VALIDATE:</strong> Generate a test report and confirm it contains all 6 sections with specific metrics, not generic placeholders.</div>
   <div class="pitfall-callout"><span class="pitfall-icon">⚠</span><span class="pitfall-text"><strong>PITFALL:</strong> Sending raw finding data to executives overwhelms them. The report must contain an executive summary with trend lines, not a data dump.</span></div>
 </div>
+
+<div class="multicloud-section">
+  <div class="multicloud-tabs">
+    <button class="mc-tab active" data-cloud="azure" onclick="switchMcTab('mc-05','azure',this)">Azure Equivalent</button>
+    <button class="mc-tab" data-cloud="gcp" onclick="switchMcTab('mc-05','gcp',this)">GCP Equivalent</button>
+  </div>
+  <div id="mc-05-azure" class="mc-panel active" data-cloud="azure">
+    <h5>Azure Implementation Path</h5>
+<p>Replace GuardDuty with <strong>Microsoft Defender for Cloud</strong> for threat detection across Azure resources. Security aggregation via <strong>Microsoft Sentinel</strong> (SIEM/SOAR) replacing Security Hub. Identity risk analysis via <strong>Microsoft Entra ID Protection</strong>. CloudTrail equivalent: <strong>Azure Activity Log</strong> + <strong>Azure Monitor</strong>. Auto-containment via <strong>Azure Logic Apps</strong> playbooks triggered by Sentinel. Compliance via <strong>Microsoft Defender for Cloud regulatory compliance</strong> dashboard (CIS, SOC 2, ISO 27001 built-in). IAM analysis via <strong>Entra Permissions Management</strong>.</p>
+<div class="mc-svc-list">
+  <span class="svc svc-azure">Defender for Cloud</span>
+  <span class="svc svc-azure">Microsoft Sentinel</span>
+  <span class="svc svc-azure">Entra ID Protection</span>
+  <span class="svc svc-azure">Azure Monitor</span>
+  <span class="svc svc-azure">Logic Apps (SOAR)</span>
+  <span class="svc svc-azure">Entra Permissions Management</span>
+</div>
+<div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div><pre><code>az sentinel alert-rule create \
+  --resource-group agentforge-security \
+  --workspace-name agentforge-sentinel \
+  --rule-name "HighSeverityThreat" \
+  --severity High \
+  --query "SecurityAlert | where AlertSeverity == 'High'"
+
+az security assessment create \
+  --name "SOC2-Compliance" \
+  --status-code "Unhealthy"</code></pre></div>
+  </div>
+  <div id="mc-05-gcp" class="mc-panel" data-cloud="gcp">
+    <h5>GCP Implementation Path</h5>
+<p>Replace GuardDuty with <strong>Security Command Center (SCC)</strong> Premium for threat detection. SIEM via <strong>Chronicle Security Operations</strong> replacing Security Hub. Identity analysis via <strong>IAM Recommender</strong> + <strong>Policy Intelligence</strong>. Audit logging via <strong>Cloud Audit Logs</strong>. Auto-containment via <strong>Cloud Functions</strong> triggered by <strong>SCC notifications</strong>. Compliance via <strong>SCC Compliance Reports</strong> (CIS, PCI DSS, NIST). Secrets management via <strong>Secret Manager</strong>.</p>
+<div class="mc-svc-list">
+  <span class="svc svc-gcp">Security Command Center</span>
+  <span class="svc svc-gcp">Chronicle SIEM</span>
+  <span class="svc svc-gcp">IAM Recommender</span>
+  <span class="svc svc-gcp">Cloud Audit Logs</span>
+  <span class="svc svc-gcp">Policy Intelligence</span>
+  <span class="svc svc-gcp">SCC Compliance</span>
+</div>
+<div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div><pre><code>gcloud scc notifications create agentforge-alerts \
+  --pubsub-topic=projects/PROJECT/topics/scc-findings \
+  --filter='severity="HIGH" OR severity="CRITICAL"'
+
+gcloud policy-intelligence lint-policy \
+  --policy-file=policy.json \
+  --resource="//cloudresourcemanager.googleapis.com/projects/PROJECT"
+
+gcloud iam recommender recommendations list \
+  --project=PROJECT --location=global</code></pre></div>
+  </div>
+</div>
 <div class="production-checklist" data-node="05"><div class="checklist-title">PRODUCTION CHECKLIST — NODE 05</div>
 <label class="check-item"><input type="checkbox" data-key="node05-1"> GuardDuty enabled in ALL active regions with 15-minute publishing frequency</label>
 <label class="check-item"><input type="checkbox" data-key="node05-2"> CloudTrail enrichment scoped to 1-hour window around each finding</label>
@@ -2793,7 +3137,14 @@ Write a professional report with:
 </div>
       <div class="panel-heading" style="margin-top:16px">Reference Docs &amp; Node Links</div>
       <div class="ref-links">
-        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html" target="_blank">Amazon GuardDuty User Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html" target="_blank">Amazon GuardDuty User Guide</a>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/entra/identity-protection/" target="_blank">Entra ID Protection</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/automation/" target="_blank">Azure Automation Runbooks</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/entra/permissions-management/" target="_blank">Entra Permissions Management</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/iam/docs/recommender-overview" target="_blank">IAM Recommender Documentation</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/policy-intelligence/docs/overview" target="_blank">Policy Intelligence Hub</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/security-command-center/docs/how-to-use-security-health-analytics" target="_blank">SCC Security Health Analytics</a></div>
+      </div>
         <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html" target="_blank">AWS Security Hub User Guide</a></div>
         <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html" target="_blank">AWS CloudTrail User Guide</a></div>
         <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html" target="_blank">Amazon EventBridge User Guide</a></div>
@@ -3432,6 +3783,67 @@ class IndustryAgent:
   <div class="validate-block"><strong>VALIDATE:</strong> Open the dashboard and confirm all widgets render. Verify PHI detection rate is &gt; 98% and FHIR mapping success is &gt; 95%.</div>
   <div class="pitfall-callout"><span class="pitfall-icon">⚠</span><span class="pitfall-text"><strong>PITFALL:</strong> Not tracking PHI detection misses (false negatives) creates compliance risk. Always measure both detection rate AND miss rate with manual spot-checks.</span></div>
 </div>
+
+<div class="multicloud-section">
+  <div class="multicloud-tabs">
+    <button class="mc-tab active" data-cloud="azure" onclick="switchMcTab('mc-06','azure',this)">Azure Equivalent</button>
+    <button class="mc-tab" data-cloud="gcp" onclick="switchMcTab('mc-06','gcp',this)">GCP Equivalent</button>
+  </div>
+  <div id="mc-06-azure" class="mc-panel active" data-cloud="azure">
+    <h5>Azure Implementation Path</h5>
+<p>Replace Comprehend Medical with <strong>Azure AI Health Text Analytics</strong> for medical NER and entity linking. FHIR storage via <strong>Azure Health Data Services</strong> (FHIR R4 server). Clinical documentation via <strong>Nuance DAX Copilot</strong> for ambient listening and note generation. PHI detection via <strong>Azure AI Language PII detection</strong> (healthcare category). Retail personalization via <strong>Azure AI Personalizer</strong>. Supply chain via <strong>Dynamics 365 Supply Chain Management</strong> + <strong>Copilot</strong>. HIPAA compliance managed through <strong>Azure Compliance Manager</strong>.</p>
+<div class="mc-svc-list">
+  <span class="svc svc-azure">Health Text Analytics</span>
+  <span class="svc svc-azure">Azure Health Data Services</span>
+  <span class="svc svc-azure">Nuance DAX Copilot</span>
+  <span class="svc svc-azure">Azure AI Personalizer</span>
+  <span class="svc svc-azure">Dynamics 365 SCM</span>
+  <span class="svc svc-azure">Compliance Manager</span>
+</div>
+<div class="code-block"><div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div><pre><code>from azure.ai.textanalytics import TextAnalyticsClient
+
+client = TextAnalyticsClient(
+    endpoint="https://agentforge.cognitiveservices.azure.com",
+    credential=credential)
+
+result = client.begin_analyze_healthcare_entities(
+    [clinical_note_text])
+for entity in result[0].entities:
+    print(f"{entity.text}: {entity.category} "
+          f"({entity.confidence_score:.2f})")
+    for link in entity.data_sources:
+        print(f"  -> {link.entity_id} ({link.name})")</code></pre></div>
+  </div>
+  <div id="mc-06-gcp" class="mc-panel" data-cloud="gcp">
+    <h5>GCP Implementation Path</h5>
+<p>Replace Comprehend Medical with <strong>Vertex AI Healthcare NLP API</strong> (Healthcare Natural Language API) for medical entity extraction and relationship detection. FHIR storage via <strong>Cloud Healthcare API</strong> (FHIR R4 store). Clinical reasoning via <strong>Vertex AI (Gemini Pro)</strong> with Med-PaLM grounding. PHI detection via <strong>Cloud DLP</strong> with healthcare infoTypes. Retail personalization via <strong>Vertex AI Recommendations</strong>. Supply chain via <strong>Supply Chain Twin</strong> on GCP.</p>
+<div class="mc-svc-list">
+  <span class="svc svc-gcp">Healthcare NLP API</span>
+  <span class="svc svc-gcp">Cloud Healthcare API</span>
+  <span class="svc svc-gcp">Vertex AI (Med-PaLM)</span>
+  <span class="svc svc-gcp">Cloud DLP</span>
+  <span class="svc svc-gcp">Vertex AI Recommendations</span>
+</div>
+<div class="code-block"><div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div><pre><code>from google.cloud import healthcare_v1
+
+client = healthcare_v1.FhirServiceClient()
+fhir_store = (f"projects/{PROJECT}/locations/{LOCATION}"
+    f"/datasets/{DATASET}/fhirStores/{FHIR_STORE}")
+
+# Create FHIR Condition resource
+response = client.create_resource(
+    parent=fhir_store,
+    type="Condition",
+    body=json.dumps(fhir_condition))
+
+# NLP analysis via Healthcare NLP
+nlp_client = healthcare_v1.CloudHealthcareNlpServiceClient()
+result = nlp_client.analyze_entities(
+    nlp_service=f"projects/{PROJECT}/locations/{LOCATION}"
+        f"/services/nlp",
+    document_content=clinical_note_text)</code></pre></div>
+  </div>
+</div>
 <div class="production-checklist" data-node="06"><div class="checklist-title">PRODUCTION CHECKLIST — NODE 06</div>
 <label class="check-item"><input type="checkbox" data-key="node06-1"> Comprehend Medical entity extraction tested on 50+ clinical notes</label>
 <label class="check-item"><input type="checkbox" data-key="node06-2"> PHI redaction covers all 18 HIPAA identifier categories</label>
@@ -3448,7 +3860,14 @@ class IndustryAgent:
 </div>
       <div class="panel-heading" style="margin-top:16px">Reference Docs &amp; Node Links</div>
       <div class="ref-links">
-        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/healthlake/latest/devguide/what-is-amazon-health-lake.html" target="_blank">Amazon HealthLake Developer Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/healthlake/latest/devguide/what-is-amazon-health-lake.html" target="_blank">Amazon HealthLake Developer Guide</a>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/health-data-services/" target="_blank">Azure Health Data Services (FHIR)</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/ai-services/language-service/personally-identifiable-information/overview" target="_blank">Azure PII Detection (Healthcare)</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/compliance/" target="_blank">Azure Compliance Manager</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/healthcare-api/docs/concepts/fhir" target="_blank">Cloud Healthcare FHIR API</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/sensitive-data-protection/docs" target="_blank">Cloud DLP (Sensitive Data Protection)</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/vertex-ai/docs/generative-ai/embeddings/get-text-embeddings" target="_blank">Vertex AI Healthcare Embeddings</a></div>
+      </div>
         <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/comprehend-medical/latest/dev/comprehendmedical-welcome.html" target="_blank">Amazon Comprehend Medical Docs</a></div>
         <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/personalize/latest/dg/what-is-personalize.html" target="_blank">Amazon Personalize Developer Guide</a></div>
         <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/ai-services/language/text-analytics-for-health/" target="_blank">Azure AI Health Text Analytics</a></div>
@@ -4068,6 +4487,61 @@ aws cloudwatch put-metric-alarm \
   <div class="validate-block"><strong>VALIDATE:</strong> Open the dashboard and confirm all widgets render. Trigger an MTTR SLA breach alarm and verify SNS notification arrives.</div>
   <div class="pitfall-callout"><span class="pitfall-icon">⚠</span><span class="pitfall-text"><strong>PITFALL:</strong> Tracking only success rate hides increasing MTTR. Always track both success rate AND mean time to remediate as primary SLIs.</span></div>
 </div>
+
+<div class="multicloud-section">
+  <div class="multicloud-tabs">
+    <button class="mc-tab active" data-cloud="azure" onclick="switchMcTab('mc-07','azure',this)">Azure Equivalent</button>
+    <button class="mc-tab" data-cloud="gcp" onclick="switchMcTab('mc-07','gcp',this)">GCP Equivalent</button>
+  </div>
+  <div id="mc-07-azure" class="mc-panel active" data-cloud="azure">
+    <h5>Azure Implementation Path</h5>
+<p>Replace CloudWatch with <strong>Azure Monitor</strong> + <strong>Azure Automanage</strong> for infrastructure monitoring and auto-remediation. Alarms via <strong>Azure Monitor Alerts</strong> with dynamic thresholds. Event routing via <strong>Event Grid</strong> → <strong>Azure Functions</strong>. Runbook execution via <strong>Azure Automation Runbooks</strong> (PowerShell/Python). FinOps via <strong>Azure Cost Management</strong> + <strong>Azure Advisor</strong> for rightsizing. EKS equivalent: <strong>AKS</strong> with <strong>Azure Monitor for containers</strong>. Chaos engineering via <strong>Azure Chaos Studio</strong>. Post-incident reports via <strong>Azure DevOps Wiki</strong>.</p>
+<div class="mc-svc-list">
+  <span class="svc svc-azure">Azure Monitor</span>
+  <span class="svc svc-azure">Azure Automanage</span>
+  <span class="svc svc-azure">Azure Automation</span>
+  <span class="svc svc-azure">Cost Management</span>
+  <span class="svc svc-azure">Azure Advisor</span>
+  <span class="svc svc-azure">Chaos Studio</span>
+  <span class="svc svc-azure">AKS</span>
+</div>
+<div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div><pre><code>az monitor metrics alert create \
+  --name "CPU-Anomaly" \
+  --resource-group agentforge-rg \
+  --scopes "/subscriptions/SUB_ID/resourceGroups/agentforge-rg" \
+  --condition "avg Percentage CPU > dynamic HighSensitivity" \
+  --action "/subscriptions/SUB_ID/resourceGroups/agentforge-rg/providers/microsoft.insights/actionGroups/OpsTeam"
+
+az advisor recommendation list \
+  --category Cost \
+  --output table</code></pre></div>
+  </div>
+  <div id="mc-07-gcp" class="mc-panel" data-cloud="gcp">
+    <h5>GCP Implementation Path</h5>
+<p>Replace CloudWatch with <strong>Cloud Monitoring</strong> + <strong>Cloud Operations Suite</strong>. Alarms via <strong>Cloud Alerting</strong> with MQL queries. Event routing via <strong>Eventarc</strong> → <strong>Cloud Functions</strong>. Runbook execution via <strong>Cloud Workflows</strong> + <strong>OS Config</strong> for VM patching. FinOps via <strong>Cloud Billing</strong> API + <strong>Recommender</strong> for rightsizing. EKS equivalent: <strong>GKE</strong> with <strong>GKE AutoOps</strong> (auto-repair, auto-upgrade). Chaos engineering via <strong>Chaos Toolkit</strong> on GKE. Cost anomaly detection via <strong>Cloud Billing Budget Alerts</strong>.</p>
+<div class="mc-svc-list">
+  <span class="svc svc-gcp">Cloud Monitoring</span>
+  <span class="svc svc-gcp">Cloud Alerting</span>
+  <span class="svc svc-gcp">GKE AutoOps</span>
+  <span class="svc svc-gcp">Cloud Billing</span>
+  <span class="svc svc-gcp">Recommender</span>
+  <span class="svc svc-gcp">Cloud Workflows</span>
+  <span class="svc svc-gcp">Eventarc</span>
+</div>
+<div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div><pre><code>gcloud monitoring policies create \
+  --policy-from-file=cpu-anomaly-policy.json
+
+gcloud recommender recommendations list \
+  --project=PROJECT \
+  --recommender=google.compute.instance.MachineTypeRecommender \
+  --location=us-central1 \
+  --format="table(name, priority, content.overview)"
+
+gcloud container clusters update agentforge-gke \
+  --enable-autorepair --enable-autoupgrade \
+  --location=us-central1</code></pre></div>
+  </div>
+</div>
 <div class="production-checklist" data-node="07"><div class="checklist-title">PRODUCTION CHECKLIST — NODE 07</div>
 <label class="check-item"><input type="checkbox" data-key="node07-1"> CloudWatch anomaly detection alarms configured for all critical metrics</label>
 <label class="check-item"><input type="checkbox" data-key="node07-2"> EventBridge enrichment includes 1 hour of metric history with each alarm</label>
@@ -4084,7 +4558,14 @@ aws cloudwatch put-metric-alarm \
 </div>
       <div class="panel-heading" style="margin-top:16px">Reference Docs &amp; Node Links</div>
       <div class="ref-links">
-        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html" target="_blank">Amazon CloudWatch User Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html" target="_blank">Amazon CloudWatch User Guide</a>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/chaos-studio/" target="_blank">Azure Chaos Studio</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/cost-management-billing/" target="_blank">Azure Cost Management + Billing</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/advisor/" target="_blank">Azure Advisor (Rightsizing)</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/monitoring/docs" target="_blank">Google Cloud Monitoring Docs</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/billing/docs/how-to/budgets" target="_blank">Cloud Billing Budget Alerts</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/recommender/docs" target="_blank">GCP Recommender (Cost + Security)</a></div>
+      </div>
         <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html" target="_blank">Amazon EventBridge User Guide</a></div>
         <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-automation.html" target="_blank">SSM Automation Runbooks</a></div>
         <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html" target="_blank">AWS Cost Explorer API</a></div>
@@ -4728,6 +5209,65 @@ def smart_route(task_type: str) -&gt; str:
   <div class="validate-block"><strong>VALIDATE:</strong> Run 100 queries across 3 providers and confirm the dashboard shows per-provider latency, cost, and success rate. Verify smart routing selects the optimal provider.</div>
   <div class="pitfall-callout"><span class="pitfall-icon">⚠</span><span class="pitfall-text"><strong>PITFALL:</strong> Routing purely on cost ignores quality differences between providers. Always include quality score (evaluated on a test set) as a routing factor alongside cost and latency.</span></div>
 </div>
+
+<div class="multicloud-section">
+  <div class="multicloud-tabs">
+    <button class="mc-tab active" data-cloud="azure" onclick="switchMcTab('mc-08','azure',this)">Azure Equivalent</button>
+    <button class="mc-tab" data-cloud="gcp" onclick="switchMcTab('mc-08','gcp',this)">GCP Equivalent</button>
+  </div>
+  <div id="mc-08-azure" class="mc-panel active" data-cloud="azure">
+    <h5>Azure-Specific Deployment</h5>
+<p>Deploy the containerized multi-agent system to <strong>Azure Kubernetes Service (AKS)</strong> or <strong>Azure Container Apps</strong> (serverless). LLM backend via <strong>Azure OpenAI Service</strong> with managed GPT-4 deployments. Vector storage via <strong>Azure AI Search</strong>. Shared state via <strong>Azure Cache for Redis</strong>. Observability via <strong>Azure Monitor Application Insights</strong> with distributed tracing. CI/CD via <strong>Azure Pipelines</strong> → <strong>ACR</strong> → <strong>AKS</strong>.</p>
+<div class="mc-svc-list">
+  <span class="svc svc-azure">AKS</span>
+  <span class="svc svc-azure">Container Apps</span>
+  <span class="svc svc-azure">Azure OpenAI</span>
+  <span class="svc svc-azure">Azure Cache for Redis</span>
+  <span class="svc svc-azure">Application Insights</span>
+  <span class="svc svc-azure">ACR</span>
+</div>
+<div class="code-block"><div class="code-header"><span class="code-lang">hcl</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div><pre><code>resource "azurerm_kubernetes_cluster" "agent" {
+  name                = "agentforge-aks"
+  location            = var.location
+  resource_group_name = var.resource_group
+  dns_prefix          = "agentforge"
+
+  default_node_pool {
+    name       = "default"
+    node_count = 2
+    vm_size    = "Standard_D2s_v3"
+  }
+  identity { type = "SystemAssigned" }
+}</code></pre></div>
+  </div>
+  <div id="mc-08-gcp" class="mc-panel" data-cloud="gcp">
+    <h5>GCP-Specific Deployment</h5>
+<p>Deploy to <strong>Cloud Run</strong> (serverless, scales to zero) or <strong>GKE Autopilot</strong> (managed Kubernetes). LLM backend via <strong>Vertex AI</strong> with Gemini Pro model endpoints. Vector storage via <strong>Vertex AI Vector Search</strong> (formerly Matching Engine). Shared state via <strong>Memorystore for Redis</strong>. Observability via <strong>Cloud Trace</strong> + <strong>Cloud Monitoring</strong>. CI/CD via <strong>Cloud Build</strong> → <strong>Artifact Registry</strong> → <strong>Cloud Run</strong>.</p>
+<div class="mc-svc-list">
+  <span class="svc svc-gcp">Cloud Run</span>
+  <span class="svc svc-gcp">GKE Autopilot</span>
+  <span class="svc svc-gcp">Vertex AI</span>
+  <span class="svc svc-gcp">Memorystore Redis</span>
+  <span class="svc svc-gcp">Cloud Trace</span>
+  <span class="svc svc-gcp">Artifact Registry</span>
+</div>
+<div class="code-block"><div class="code-header"><span class="code-lang">hcl</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div><pre><code>resource "google_cloud_run_v2_service" "agent" {
+  name     = "agentforge-agent"
+  location = var.region
+
+  template {
+    containers {
+      image = "${var.artifact_registry}/agentforge:${var.image_tag}"
+      resources {
+        limits = { memory = "512Mi", cpu = "1" }
+      }
+      env { name = "LLM_PROVIDER" value = "vertex_ai" }
+    }
+    scaling { min_instance_count = 0  max_instance_count = 10 }
+  }
+}</code></pre></div>
+  </div>
+</div>
 <div class="production-checklist" data-node="08"><div class="checklist-title">PRODUCTION CHECKLIST — NODE 08</div>
 <label class="check-item"><input type="checkbox" data-key="node08-1"> LangGraph supervisor has loop guard (max 5 iterations before END)</label>
 <label class="check-item"><input type="checkbox" data-key="node08-2"> Each specialist agent has domain-specific tools only (no tool leakage)</label>
@@ -4744,7 +5284,14 @@ def smart_route(task_type: str) -&gt; str:
 </div>
       <div class="panel-heading" style="margin-top:16px">Reference Docs &amp; Node Links</div>
       <div class="ref-links">
-        <div><span class="ref-tag ref-tag-oss">OSS</span> <a href="https://langchain-ai.github.io/langgraph/" target="_blank">LangGraph Documentation</a></div>
+        <div><span class="ref-tag ref-tag-oss">OSS</span> <a href="https://langchain-ai.github.io/langgraph/" target="_blank">LangGraph Documentation</a>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/container-apps/" target="_blank">Azure Container Apps</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/azure-cache-for-redis/" target="_blank">Azure Cache for Redis</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview" target="_blank">Application Insights (Distributed Tracing)</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/run/docs" target="_blank">Google Cloud Run Documentation</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/memorystore/docs/redis" target="_blank">Memorystore for Redis</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/trace/docs" target="_blank">Google Cloud Trace</a></div>
+      </div>
         <div><span class="ref-tag ref-tag-oss">OSS</span> <a href="https://python.langchain.com/" target="_blank">LangChain Python Documentation</a></div>
         <div><span class="ref-tag ref-tag-oss">OSS</span> <a href="https://docs.crewai.com/" target="_blank">CrewAI Documentation</a></div>
         <div><span class="ref-tag ref-tag-oss">OSS</span> <a href="https://microsoft.github.io/autogen/" target="_blank">AutoGen Documentation</a></div>
@@ -5170,6 +5717,16 @@ function copyCode(btn) {
       btn.classList.remove('copied');
     }, 2000);
   });
+}
+
+
+// === MULTI-CLOUD TAB SWITCHING ===
+function switchMcTab(prefix, cloud, btn) {
+  const section = btn.closest('.multicloud-section');
+  section.querySelectorAll('.mc-tab').forEach(t => t.classList.remove('active'));
+  section.querySelectorAll('.mc-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(prefix + '-' + cloud).classList.add('active');
 }
 
 // === PRODUCTION CHECKLIST — LOCALSTORAGE PERSISTENCE ===
