@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>AgentForge — Industry-Specific Agents Architecture</title>
+<style>
+:root{--ink:#0b0c0b;--paper:#f5f2eb;--paper2:#ede9df;--rule:#c8c2b5;--rule2:#9e9788;--accent:#c8420a;--accent2:#e8720c;--green:#16a34a;--blue:#0078d4;--gold:#b8860b;--mono:'Courier New',monospace;--display:system-ui,-apple-system,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--paper);font-family:var(--mono);font-size:13px;line-height:1.6;min-height:100vh;overflow-x:hidden}
+
+/* === HEADER === */
+.page-header{padding:32px 48px 24px;border-bottom:2px solid var(--accent);display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.back-link{font-size:11px;color:var(--accent);text-decoration:none;border:1px solid rgba(200,66,10,.4);padding:4px 12px;border-radius:2px;transition:all .15s;letter-spacing:.04em}
+.back-link:hover{background:var(--accent);color:#fff}
+.page-num{font-size:48px;font-weight:700;color:var(--accent);line-height:1;letter-spacing:-.02em;font-family:var(--display)}
+.page-title-group{flex:1}
+.page-title{font-size:24px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--paper);font-family:var(--display)}
+.page-subtitle{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;letter-spacing:.05em}
+
+/* === SERVICES ROW === */
+.services{padding:16px 48px;display:flex;flex-wrap:wrap;gap:6px;border-bottom:1px solid rgba(255,255,255,.08)}
+.svc-tag{font-size:9px;padding:3px 8px;border-radius:2px;letter-spacing:.04em;font-weight:600}
+.svc-aws{background:rgba(232,114,12,.15);color:#f4a054;border:1px solid rgba(232,114,12,.3)}
+.svc-azure{background:rgba(0,120,212,.12);color:#5ba3e6;border:1px solid rgba(0,120,212,.3)}
+.svc-gcp{background:rgba(26,115,232,.12);color:#6db3f8;border:1px solid rgba(26,115,232,.3)}
+.svc-oss{background:rgba(22,163,74,.12);color:#4ade80;border:1px solid rgba(22,163,74,.3)}
+
+/* === FLOW DIAGRAM CANVAS === */
+.diagram-canvas{padding:48px;min-height:520px;position:relative;display:flex;justify-content:center;align-items:center}
+.flow-container{position:relative;width:100%;max-width:1100px}
+
+/* === FLOW NODES === */
+.flow-row{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:0;position:relative}
+.flow-node{position:relative;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:16px 20px;min-width:160px;text-align:center;cursor:pointer;transition:all .25s ease;z-index:2}
+.flow-node:hover{background:rgba(200,66,10,.12);border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,66,10,.15)}
+.flow-node.active{background:rgba(200,66,10,.18);border-color:var(--accent);box-shadow:0 0 20px rgba(200,66,10,.2)}
+.node-icon{font-size:24px;margin-bottom:6px;display:block}
+.node-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--paper)}
+.node-tag{font-size:8px;letter-spacing:.08em;color:var(--accent);margin-top:3px;text-transform:uppercase}
+.node-badge{position:absolute;top:-8px;right:-8px;font-size:8px;padding:2px 6px;border-radius:8px;font-weight:700;letter-spacing:.05em}
+.badge-aws{background:var(--accent2);color:#fff}
+.badge-azure{background:var(--blue);color:#fff}
+.badge-gcp{background:#1a73e8;color:#fff}
+.badge-oss{background:var(--green);color:#fff}
+.badge-core{background:var(--accent);color:#fff}
+
+/* === ARROWS === */
+.arrow-down{display:flex;justify-content:center;margin:0;padding:8px 0;position:relative;z-index:1}
+.arrow-down svg{display:block}
+.arrow-right{display:flex;align-items:center;padding:0 4px;z-index:1}
+.arrow-right svg{display:block}
+
+/* Animated dash */
+@keyframes dashFlow{from{stroke-dashoffset:20}to{stroke-dashoffset:0}}
+.flow-arrow{stroke:var(--accent);stroke-width:2;fill:none;stroke-dasharray:6,4;animation:dashFlow .8s linear infinite}
+.flow-arrow-head{fill:var(--accent)}
+
+/* === HORIZONTAL FLOW === */
+.h-flow{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap}
+
+/* === VERTICAL FLOW === */
+.v-flow{display:flex;flex-direction:column;align-items:center;gap:0}
+
+/* === BRANCH === */
+.branch-container{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-top:0}
+.branch-node{flex:1;min-width:140px;max-width:200px}
+
+/* === DETAIL PANEL === */
+.detail-panel{position:fixed;top:0;right:-480px;width:480px;height:100vh;background:var(--ink);border-left:2px solid var(--accent);padding:32px;overflow-y:auto;transition:right .35s ease;z-index:100;box-shadow:-8px 0 32px rgba(0,0,0,.5)}
+.detail-panel.open{right:0}
+.detail-close{position:absolute;top:16px;right:16px;width:32px;height:32px;background:none;border:1px solid rgba(255,255,255,.2);color:var(--paper);font-size:18px;cursor:pointer;border-radius:2px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.detail-close:hover{background:var(--accent);border-color:var(--accent)}
+.detail-title{font-size:18px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px;padding-right:40px;font-family:var(--display)}
+.detail-section{margin-bottom:20px}
+.detail-section h4{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:4px}
+.detail-section p{font-size:11px;color:rgba(255,255,255,.7);line-height:1.8}
+.detail-code{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:3px;padding:12px;font-size:10px;line-height:1.7;color:rgba(255,255,255,.7);overflow-x:auto;margin-top:8px;white-space:pre}
+.detail-list{list-style:none;padding:0}
+.detail-list li{font-size:10px;color:rgba(255,255,255,.6);line-height:2;padding-left:14px;position:relative}
+.detail-list li::before{content:'\25B6';position:absolute;left:0;color:var(--accent);font-size:7px;top:1px}
+
+/* === OVERLAY === */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;opacity:0;pointer-events:none;transition:opacity .3s}
+.overlay.open{opacity:1;pointer-events:auto}
+
+/* === LEGEND === */
+.legend{padding:16px 48px 32px;display:flex;gap:24px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.06)}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:9px;color:rgba(255,255,255,.4);letter-spacing:.04em}
+.legend-dot{width:10px;height:10px;border-radius:2px}
+
+/* === DATA FLOW LABELS === */
+.flow-label{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);text-align:center;padding:2px 0}
+
+/* === FOOTER === */
+.page-footer{padding:20px 48px;border-top:2px solid var(--accent);font-size:9px;color:rgba(255,255,255,.3);display:flex;justify-content:space-between;letter-spacing:.06em}
+.page-footer a{color:var(--accent);text-decoration:none}
+
+/* === RESPONSIVE === */
+@media(max-width:768px){
+  .page-header{padding:20px 24px}
+  .diagram-canvas{padding:24px 16px}
+  .services{padding:12px 24px}
+  .h-flow{flex-direction:column}
+  .branch-container{flex-direction:column;align-items:center}
+  .detail-panel{width:100%;right:-100%}
+  .legend{padding:12px 24px}
+  .page-footer{padding:16px 24px;flex-direction:column;gap:8px}
+}
+
+/* === PULSE ANIMATION === */
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(200,66,10,.3)}50%{box-shadow:0 0 0 8px rgba(200,66,10,0)}}
+.flow-node.pulse{animation:pulse 2s ease infinite}
+
+/* === STEP INDICATOR === */
+.step-badge{position:absolute;top:-10px;left:-10px;width:22px;height:22px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:3}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <a class="back-link" href="../index.html">&larr; Back to Portal</a>
+  <div class="page-num">06</div>
+  <div class="page-title-group">
+    <div class="page-title">Industry-Specific Agents</div>
+    <div class="page-subtitle">Healthcare NER + PHI redaction, retail personalization, supply chain exception monitoring</div>
+  </div>
+</div>
+
+<div class="services">
+  <span class="svc-tag svc-aws">Comprehend Medical</span>
+  <span class="svc-tag svc-aws">HealthLake</span>
+  <span class="svc-tag svc-aws">Macie</span>
+  <span class="svc-tag svc-aws">Personalize</span>
+  <span class="svc-tag svc-aws">Bedrock Claude</span>
+  <span class="svc-tag svc-azure">Nuance DAX</span>
+  <span class="svc-tag svc-gcp">Vertex Healthcare NLP</span>
+</div>
+
+<div class="diagram-canvas">
+  <div class="flow-container">
+    
+    <div class="v-flow">
+      <div class="flow-node" data-node="ingest" onclick="openDetail('ingest')"><span class="step-badge">1</span><span class="node-badge badge-aws">AWS</span><span class="node-icon">📄</span><span class="node-label">Clinical Notes</span><span class="node-tag">S3 ingestion</span></div>
+      <div class="arrow-down"><svg width="24" height="36"><line x1="12" y1="0" x2="12" y2="30" class="flow-arrow"/><polygon points="6,28 12,36 18,28" class="flow-arrow-head"/></svg></div>
+      <div class="flow-label">EXTRACTION & SAFETY</div>
+      <div class="h-flow">
+        <div class="flow-node" data-node="ner" onclick="openDetail('ner')"><span class="step-badge">2</span><span class="node-badge badge-aws">AWS</span><span class="node-icon">🧬</span><span class="node-label">Medical NER</span><span class="node-tag">Comprehend Medical</span></div>
+        <div class="arrow-right"><svg width="36" height="24"><line x1="0" y1="12" x2="30" y2="12" class="flow-arrow"/><polygon points="28,6 36,12 28,18" class="flow-arrow-head"/></svg></div>
+        <div class="flow-node" data-node="phi" onclick="openDetail('phi')"><span class="step-badge">3</span><span class="node-badge badge-aws">AWS</span><span class="node-icon">🔒</span><span class="node-label">PHI Redaction</span><span class="node-tag">18 HIPAA categories</span></div>
+        <div class="arrow-right"><svg width="36" height="24"><line x1="0" y1="12" x2="30" y2="12" class="flow-arrow"/><polygon points="28,6 36,12 28,18" class="flow-arrow-head"/></svg></div>
+        <div class="flow-node" data-node="fhir" onclick="openDetail('fhir')"><span class="step-badge">4</span><span class="node-badge badge-aws">AWS</span><span class="node-icon">📋</span><span class="node-label">FHIR R4 Map</span><span class="node-tag">HealthLake store</span></div>
+      </div>
+      <div class="arrow-down"><svg width="24" height="36"><line x1="12" y1="0" x2="12" y2="30" class="flow-arrow"/><polygon points="6,28 12,36 18,28" class="flow-arrow-head"/></svg></div>
+      <div class="flow-label">CLINICAL REASONING</div>
+      <div class="h-flow">
+        <div class="flow-node" data-node="ontology" onclick="openDetail('ontology')"><span class="step-badge">5</span><span class="node-icon">📖</span><span class="node-label">Ontology Ground</span><span class="node-tag">SNOMED + ICD-10</span></div>
+        <div class="arrow-right"><svg width="36" height="24"><line x1="0" y1="12" x2="30" y2="12" class="flow-arrow"/><polygon points="28,6 36,12 28,18" class="flow-arrow-head"/></svg></div>
+        <div class="flow-node" data-node="reason" onclick="openDetail('reason')"><span class="step-badge">6</span><span class="node-badge badge-aws">AWS</span><span class="node-icon">🧠</span><span class="node-label">Clinical Agent</span><span class="node-tag">Bedrock + codes</span></div>
+        <div class="arrow-right"><svg width="36" height="24"><line x1="0" y1="12" x2="30" y2="12" class="flow-arrow"/><polygon points="28,6 36,12 28,18" class="flow-arrow-head"/></svg></div>
+        <div class="flow-node" data-node="summary" onclick="openDetail('summary')"><span class="step-badge">7</span><span class="node-icon">📝</span><span class="node-label">Patient Summary</span><span class="node-tag">1-page overview</span></div>
+      </div>
+      <div class="arrow-down"><svg width="24" height="36"><line x1="12" y1="0" x2="12" y2="30" class="flow-arrow"/><polygon points="6,28 12,36 18,28" class="flow-arrow-head"/></svg></div>
+      <div class="flow-label">CROSS-INDUSTRY</div>
+      <div class="h-flow">
+        <div class="flow-node" data-node="retail" onclick="openDetail('retail')"><span class="step-badge">8</span><span class="node-badge badge-aws">AWS</span><span class="node-icon">🛒</span><span class="node-label">Retail Agent</span><span class="node-tag">Personalize + LLM</span></div>
+        <div class="arrow-right"><svg width="36" height="24"><line x1="0" y1="12" x2="30" y2="12" class="flow-arrow"/><polygon points="28,6 36,12 28,18" class="flow-arrow-head"/></svg></div>
+        <div class="flow-node" data-node="supply" onclick="openDetail('supply')"><span class="step-badge">9</span><span class="node-icon">📦</span><span class="node-label">Supply Chain</span><span class="node-tag">event stream monitor</span></div>
+      </div>
+      <div class="arrow-down"><svg width="24" height="36"><line x1="12" y1="0" x2="12" y2="30" class="flow-arrow"/><polygon points="6,28 12,36 18,28" class="flow-arrow-head"/></svg></div>
+      <div class="h-flow">
+        <div class="flow-node" data-node="audit" onclick="openDetail('audit')"><span class="step-badge">10</span><span class="node-icon">📊</span><span class="node-label">HIPAA Audit</span><span class="node-tag">access logging</span></div>
+        <div class="arrow-right"><svg width="36" height="24"><line x1="0" y1="12" x2="30" y2="12" class="flow-arrow"/><polygon points="28,6 36,12 28,18" class="flow-arrow-head"/></svg></div>
+        <div class="flow-node" data-node="hipaa" onclick="openDetail('hipaa')"><span class="step-badge">11</span><span class="node-icon">✅</span><span class="node-label">Compliance Check</span><span class="node-tag">§164.312 validation</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>Healthcare Path</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Retail Path</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Supply Chain Path</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>Compliance</div>
+  <div class="legend-item"><div class="legend-dot" style="background:transparent;border:1px dashed var(--accent)"></div>Click any node for details</div>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeDetail()"></div>
+<div class="detail-panel" id="detailPanel">
+  <button class="detail-close" onclick="closeDetail()">&times;</button>
+  <div class="detail-title" id="detailTitle"></div>
+  <div id="detailContent"></div>
+</div>
+
+<div class="page-footer">
+  <span>AgentForge v1.0 &middot; Architecture Diagram &middot; Node 06</span>
+  <a href="../index.html">Return to Curriculum Portal</a>
+</div>
+
+<script>
+// === NODE DETAIL DATA ===
+const nodeData = {
+  "ingest": {
+    "title": "Clinical Note Ingestion",
+    "description": "Clinical notes are uploaded to S3 from EHR systems. Supports PDF, plain text, and HL7 CDA formats. Triggers Lambda processing pipeline via S3 event notification.",
+    "services": [
+      "Amazon S3",
+      "Lambda"
+    ],
+    "inputs": [
+      "Clinical notes (PDF/TXT/CDA)"
+    ],
+    "outputs": [
+      "Raw text ready for NER extraction"
+    ]
+  },
+  "ner": {
+    "title": "Medical NER Extraction",
+    "description": "Amazon Comprehend Medical extracts medical entities: conditions, medications, procedures, anatomy, test results. Each entity includes confidence score, traits (negation, diagnosis), and attributes (dosage, frequency).",
+    "services": [
+      "Amazon Comprehend Medical"
+    ],
+    "inputs": [
+      "Clinical note text (max 20KB per request)"
+    ],
+    "outputs": [
+      "Categorized entities with scores and traits"
+    ],
+    "code": "resp = comprehend_medical.detect_entities_v2(\n  Text=note_text)\nfor entity in resp[\"Entities\"]:\n  category = entity[\"Category\"]\n  score = entity[\"Score\"]",
+    "pitfall": "20KB per-request limit. Split long notes into sections, process separately, then merge."
+  },
+  "phi": {
+    "title": "PHI Detection & Redaction",
+    "description": "Detects and redacts all 18 HIPAA identifier categories: names, dates, SSNs, phone numbers, addresses, etc. Original and redacted versions stored separately with different access controls.",
+    "services": [
+      "Comprehend Medical (PHI)",
+      "Macie"
+    ],
+    "inputs": [
+      "Clinical note text"
+    ],
+    "outputs": [
+      "Redacted text with [TYPE_REDACTED] tags",
+      "PHI detection log"
+    ],
+    "code": "sorted_phi = sorted(phi_entities,\n  key=lambda e: e[\"BeginOffset\"],\n  reverse=True)\nfor entity in sorted_phi:\n  redacted = redacted[:start] +\n    f\"[{phi_type}_REDACTED]\" +\n    redacted[end:]",
+    "pitfall": "Regex-based redaction misses 15-20% of PHI variants. Always use Comprehend Medical as primary method."
+  },
+  "fhir": {
+    "title": "FHIR R4 Mapping",
+    "description": "Extracted entities are transformed into FHIR R4 resources (Condition, MedicationStatement, Procedure) and stored in HealthLake. Entities with confidence > 0.9 are marked \"confirmed\", below 0.9 as \"provisional\".",
+    "services": [
+      "Amazon HealthLake"
+    ],
+    "inputs": [
+      "Extracted medical entities"
+    ],
+    "outputs": [
+      "FHIR R4 resources stored in HealthLake"
+    ]
+  },
+  "ontology": {
+    "title": "Ontology Grounding",
+    "description": "SNOMED CT and ICD-10 reference files loaded from S3. Every medical code in generated output is validated against the reference. Invalid codes are flagged and rejected.",
+    "services": [
+      "SNOMED CT Reference",
+      "ICD-10 Codes"
+    ],
+    "inputs": [
+      "Medical entity text"
+    ],
+    "outputs": [
+      "Validated SNOMED/ICD-10 codes"
+    ],
+    "pitfall": "Full SNOMED CT file requires 2GB+ memory. Use DynamoDB lookup table with only active concepts for Lambda."
+  },
+  "reason": {
+    "title": "Clinical Reasoning Agent",
+    "description": "Bedrock Claude generates clinical summaries grounded in SNOMED/ICD-10 codes. Explicitly constrained to summarize only — never diagnose. Outputs carry mandatory disclaimers.",
+    "services": [
+      "Amazon Bedrock (Claude 3 Sonnet)"
+    ],
+    "inputs": [
+      "Redacted note",
+      "FHIR conditions",
+      "SNOMED/ICD-10 mappings"
+    ],
+    "outputs": [
+      "Clinical summary with coded references",
+      "Drug interaction warnings"
+    ],
+    "pitfall": "Allowing the agent to diagnose creates liability. Prompt must state \"summarize only, never diagnose.\""
+  },
+  "summary": {
+    "title": "Patient Summary",
+    "description": "One-page patient summary from FHIR data: active conditions, current medications with dosages, allergies with reactions, recent procedures, and care plan recommendations. Includes drug-allergy interaction checks.",
+    "services": [
+      "HealthLake FHIR queries",
+      "Bedrock"
+    ],
+    "inputs": [
+      "All FHIR resources for patient"
+    ],
+    "outputs": [
+      "Formatted patient summary",
+      "Drug interaction alerts"
+    ]
+  },
+  "retail": {
+    "title": "Retail Personalization",
+    "description": "Amazon Personalize trained on clickstream data provides recommendation scores. Bedrock agent wraps these in natural language narratives that explain why each product was recommended.",
+    "services": [
+      "Amazon Personalize",
+      "Bedrock"
+    ],
+    "inputs": [
+      "User ID",
+      "Clickstream history"
+    ],
+    "outputs": [
+      "Product recommendations with narrative explanations"
+    ]
+  },
+  "supply": {
+    "title": "Supply Chain Monitor",
+    "description": "Kinesis stream of supply chain events. Agent monitors for disruptions (delays, outages, closures), classifies severity, and suggests alternative suppliers from a Knowledge Base.",
+    "services": [
+      "Amazon Kinesis",
+      "Bedrock Knowledge Base"
+    ],
+    "inputs": [
+      "Supply chain event stream"
+    ],
+    "outputs": [
+      "Disruption alerts",
+      "Alternative supplier suggestions"
+    ]
+  },
+  "audit": {
+    "title": "HIPAA Audit Logging",
+    "description": "Every data access is logged: who, what, when, why. Stored in DynamoDB with 7-year TTL (HIPAA requirement). Supports on-demand audit report generation.",
+    "services": [
+      "DynamoDB",
+      "CloudTrail"
+    ],
+    "inputs": [
+      "Access event (user, resource, action)"
+    ],
+    "outputs": [
+      "Audit log entry with 7-year retention"
+    ],
+    "code": "audit_table.put_item(Item={\n  \"accessId\": uuid4(),\n  \"userId\": user_id,\n  \"action\": action,\n  \"ttl\": 2555_days_from_now\n})",
+    "pitfall": "TTL below 6 years violates HIPAA retention. Always set to at least 2555 days (7 years)."
+  },
+  "hipaa": {
+    "title": "HIPAA §164.312 Validation",
+    "description": "Automated checks against HIPAA Security Rule: access controls, audit controls, integrity, transmission security. Runs daily and alerts on newly failed controls.",
+    "services": [
+      "AWS Config",
+      "Custom validation logic"
+    ],
+    "inputs": [
+      "Config rule evaluations"
+    ],
+    "outputs": [
+      "Compliance report by control family",
+      "Jira tickets for failures"
+    ]
+  }
+};
+
+// === OPEN DETAIL PANEL ===
+function openDetail(nodeId) {
+  const data = nodeData[nodeId];
+  if (!data) return;
+
+  document.querySelectorAll('.flow-node').forEach(n => n.classList.remove('active'));
+  const el = document.querySelector('[data-node="' + nodeId + '"]');
+  if (el) el.classList.add('active');
+
+  document.getElementById('detailTitle').textContent = data.title;
+  let html = '';
+
+  if (data.description) {
+    html += '<div class="detail-section"><h4>What This Does</h4><p>' + data.description + '</p></div>';
+  }
+  if (data.services && data.services.length) {
+    html += '<div class="detail-section"><h4>AWS / Cloud Services</h4><ul class="detail-list">' +
+      data.services.map(s => '<li>' + s + '</li>').join('') + '</ul></div>';
+  }
+  if (data.inputs && data.inputs.length) {
+    html += '<div class="detail-section"><h4>Inputs</h4><ul class="detail-list">' +
+      data.inputs.map(s => '<li>' + s + '</li>').join('') + '</ul></div>';
+  }
+  if (data.outputs && data.outputs.length) {
+    html += '<div class="detail-section"><h4>Outputs</h4><ul class="detail-list">' +
+      data.outputs.map(s => '<li>' + s + '</li>').join('') + '</ul></div>';
+  }
+  if (data.code) {
+    html += '<div class="detail-section"><h4>Key Code Pattern</h4><div class="detail-code">' + data.code + '</div></div>';
+  }
+  if (data.pitfall) {
+    html += '<div class="detail-section"><h4 style="color:var(--gold)">\u26A0 Common Pitfall</h4><p style="color:rgba(217,155,30,.8)">' + data.pitfall + '</p></div>';
+  }
+
+  document.getElementById('detailContent').innerHTML = html;
+  document.getElementById('detailPanel').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+}
+
+// === CLOSE DETAIL PANEL ===
+function closeDetail() {
+  document.getElementById('detailPanel').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+  document.querySelectorAll('.flow-node').forEach(n => n.classList.remove('active'));
+}
+
+// === KEYBOARD ===
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
+
+// === AUTO-PULSE first node ===
+setTimeout(() => {
+  const first = document.querySelector('.flow-node');
+  if (first) first.classList.add('pulse');
+  setTimeout(() => { if (first) first.classList.remove('pulse'); }, 6000);
+}, 1000);
+</script>
+</body>
+</html>

@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>AgentForge — Cross-Cloud & Agnostic Patterns Architecture</title>
+<style>
+:root{--ink:#0b0c0b;--paper:#f5f2eb;--paper2:#ede9df;--rule:#c8c2b5;--rule2:#9e9788;--accent:#c8420a;--accent2:#e8720c;--green:#16a34a;--blue:#0078d4;--gold:#b8860b;--mono:'Courier New',monospace;--display:system-ui,-apple-system,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--paper);font-family:var(--mono);font-size:13px;line-height:1.6;min-height:100vh;overflow-x:hidden}
+
+/* === HEADER === */
+.page-header{padding:32px 48px 24px;border-bottom:2px solid var(--accent);display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.back-link{font-size:11px;color:var(--accent);text-decoration:none;border:1px solid rgba(200,66,10,.4);padding:4px 12px;border-radius:2px;transition:all .15s;letter-spacing:.04em}
+.back-link:hover{background:var(--accent);color:#fff}
+.page-num{font-size:48px;font-weight:700;color:var(--accent);line-height:1;letter-spacing:-.02em;font-family:var(--display)}
+.page-title-group{flex:1}
+.page-title{font-size:24px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--paper);font-family:var(--display)}
+.page-subtitle{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;letter-spacing:.05em}
+
+/* === SERVICES ROW === */
+.services{padding:16px 48px;display:flex;flex-wrap:wrap;gap:6px;border-bottom:1px solid rgba(255,255,255,.08)}
+.svc-tag{font-size:9px;padding:3px 8px;border-radius:2px;letter-spacing:.04em;font-weight:600}
+.svc-aws{background:rgba(232,114,12,.15);color:#f4a054;border:1px solid rgba(232,114,12,.3)}
+.svc-azure{background:rgba(0,120,212,.12);color:#5ba3e6;border:1px solid rgba(0,120,212,.3)}
+.svc-gcp{background:rgba(26,115,232,.12);color:#6db3f8;border:1px solid rgba(26,115,232,.3)}
+.svc-oss{background:rgba(22,163,74,.12);color:#4ade80;border:1px solid rgba(22,163,74,.3)}
+
+/* === FLOW DIAGRAM CANVAS === */
+.diagram-canvas{padding:48px;min-height:520px;position:relative;display:flex;justify-content:center;align-items:center}
+.flow-container{position:relative;width:100%;max-width:1100px}
+
+/* === FLOW NODES === */
+.flow-row{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:0;position:relative}
+.flow-node{position:relative;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:16px 20px;min-width:160px;text-align:center;cursor:pointer;transition:all .25s ease;z-index:2}
+.flow-node:hover{background:rgba(200,66,10,.12);border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,66,10,.15)}
+.flow-node.active{background:rgba(200,66,10,.18);border-color:var(--accent);box-shadow:0 0 20px rgba(200,66,10,.2)}
+.node-icon{font-size:24px;margin-bottom:6px;display:block}
+.node-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--paper)}
+.node-tag{font-size:8px;letter-spacing:.08em;color:var(--accent);margin-top:3px;text-transform:uppercase}
+.node-badge{position:absolute;top:-8px;right:-8px;font-size:8px;padding:2px 6px;border-radius:8px;font-weight:700;letter-spacing:.05em}
+.badge-aws{background:var(--accent2);color:#fff}
+.badge-azure{background:var(--blue);color:#fff}
+.badge-gcp{background:#1a73e8;color:#fff}
+.badge-oss{background:var(--green);color:#fff}
+.badge-core{background:var(--accent);color:#fff}
+
+/* === ARROWS === */
+.arrow-down{display:flex;justify-content:center;margin:0;padding:8px 0;position:relative;z-index:1}
+.arrow-down svg{display:block}
+.arrow-right{display:flex;align-items:center;padding:0 4px;z-index:1}
+.arrow-right svg{display:block}
+
+/* Animated dash */
+@keyframes dashFlow{from{stroke-dashoffset:20}to{stroke-dashoffset:0}}
+.flow-arrow{stroke:var(--accent);stroke-width:2;fill:none;stroke-dasharray:6,4;animation:dashFlow .8s linear infinite}
+.flow-arrow-head{fill:var(--accent)}
+
+/* === HORIZONTAL FLOW === */
+.h-flow{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap}
+
+/* === VERTICAL FLOW === */
+.v-flow{display:flex;flex-direction:column;align-items:center;gap:0}
+
+/* === BRANCH === */
+.branch-container{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-top:0}
+.branch-node{flex:1;min-width:140px;max-width:200px}
+
+/* === DETAIL PANEL === */
+.detail-panel{position:fixed;top:0;right:-480px;width:480px;height:100vh;background:var(--ink);border-left:2px solid var(--accent);padding:32px;overflow-y:auto;transition:right .35s ease;z-index:100;box-shadow:-8px 0 32px rgba(0,0,0,.5)}
+.detail-panel.open{right:0}
+.detail-close{position:absolute;top:16px;right:16px;width:32px;height:32px;background:none;border:1px solid rgba(255,255,255,.2);color:var(--paper);font-size:18px;cursor:pointer;border-radius:2px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.detail-close:hover{background:var(--accent);border-color:var(--accent)}
+.detail-title{font-size:18px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px;padding-right:40px;font-family:var(--display)}
+.detail-section{margin-bottom:20px}
+.detail-section h4{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:4px}
+.detail-section p{font-size:11px;color:rgba(255,255,255,.7);line-height:1.8}
+.detail-code{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:3px;padding:12px;font-size:10px;line-height:1.7;color:rgba(255,255,255,.7);overflow-x:auto;margin-top:8px;white-space:pre}
+.detail-list{list-style:none;padding:0}
+.detail-list li{font-size:10px;color:rgba(255,255,255,.6);line-height:2;padding-left:14px;position:relative}
+.detail-list li::before{content:'\25B6';position:absolute;left:0;color:var(--accent);font-size:7px;top:1px}
+
+/* === OVERLAY === */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;opacity:0;pointer-events:none;transition:opacity .3s}
+.overlay.open{opacity:1;pointer-events:auto}
+
+/* === LEGEND === */
+.legend{padding:16px 48px 32px;display:flex;gap:24px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.06)}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:9px;color:rgba(255,255,255,.4);letter-spacing:.04em}
+.legend-dot{width:10px;height:10px;border-radius:2px}
+
+/* === DATA FLOW LABELS === */
+.flow-label{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);text-align:center;padding:2px 0}
+
+/* === FOOTER === */
+.page-footer{padding:20px 48px;border-top:2px solid var(--accent);font-size:9px;color:rgba(255,255,255,.3);display:flex;justify-content:space-between;letter-spacing:.06em}
+.page-footer a{color:var(--accent);text-decoration:none}
+
+/* === RESPONSIVE === */
+@media(max-width:768px){
+  .page-header{padding:20px 24px}
+  .diagram-canvas{padding:24px 16px}
+  .services{padding:12px 24px}
+  .h-flow{flex-direction:column}
+  .branch-container{flex-direction:column;align-items:center}
+  .detail-panel{width:100%;right:-100%}
+  .legend{padding:12px 24px}
+  .page-footer{padding:16px 24px;flex-direction:column;gap:8px}
+}
+
+/* === PULSE ANIMATION === */
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(200,66,10,.3)}50%{box-shadow:0 0 0 8px rgba(200,66,10,0)}}
+.flow-node.pulse{animation:pulse 2s ease infinite}
+
+/* === STEP INDICATOR === */
+.step-badge{position:absolute;top:-10px;left:-10px;width:22px;height:22px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:3}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <a class="back-link" href="../index.html">&larr; Back to Portal</a>
+  <div class="page-num">08</div>
+  <div class="page-title-group">
+    <div class="page-title">Cross-Cloud & Agnostic Patterns</div>
+    <div class="page-subtitle">LangGraph orchestration, CrewAI teams, LiteLLM abstraction, and portable Docker deployments</div>
+  </div>
+</div>
+
+<div class="services">
+  <span class="svc-tag svc-oss">LangGraph</span>
+  <span class="svc-tag svc-oss">CrewAI</span>
+  <span class="svc-tag svc-oss">AutoGen</span>
+  <span class="svc-tag svc-oss">LiteLLM</span>
+  <span class="svc-tag svc-oss">Docker</span>
+  <span class="svc-tag svc-aws">ECS (AWS)</span>
+  <span class="svc-tag svc-azure">AKS (Azure)</span>
+  <span class="svc-tag svc-gcp">Cloud Run (GCP)</span>
+</div>
+
+<div class="diagram-canvas">
+  <div class="flow-container">
+    
+    <div class="v-flow">
+      <div class="flow-node" data-node="input_d" onclick="openDetail('input_d')"><span class="step-badge">1</span><span class="node-icon">💬</span><span class="node-label">User Request</span><span class="node-tag">any input channel</span></div>
+      <div class="arrow-down"><svg width="24" height="36"><line x1="12" y1="0" x2="12" y2="30" class="flow-arrow"/><polygon points="6,28 12,36 18,28" class="flow-arrow-head"/></svg></div>
+      <div class="flow-label">ORCHESTRATION LAYER</div>
+      <div class="h-flow">
+        <div class="flow-node" data-node="supervisor" onclick="openDetail('supervisor')"><span class="step-badge">2</span><span class="node-badge badge-oss">OSS</span><span class="node-icon">👁️</span><span class="node-label">Supervisor</span><span class="node-tag">LangGraph StateGraph</span></div>
+      </div>
+      <div class="arrow-down"><svg width="24" height="36"><line x1="12" y1="0" x2="12" y2="30" class="flow-arrow"/><polygon points="6,28 12,36 18,28" class="flow-arrow-head"/></svg></div>
+      <div class="flow-label">SPECIALIST AGENTS</div>
+      <div class="branch-container">
+        <div class="flow-node" data-node="research_d" onclick="openDetail('research_d')"><span class="step-badge">3</span><span class="node-icon">🔍</span><span class="node-label">Research Agent</span><span class="node-tag">RAG retrieval</span></div>
+        <div class="flow-node" data-node="code_d" onclick="openDetail('code_d')"><span class="step-badge">4</span><span class="node-icon">💻</span><span class="node-label">Code Agent</span><span class="node-tag">generation + review</span></div>
+        <div class="flow-node" data-node="writer" onclick="openDetail('writer')"><span class="step-badge">5</span><span class="node-icon">✍️</span><span class="node-label">Writer Agent</span><span class="node-tag">content creation</span></div>
+        <div class="flow-node" data-node="security_d" onclick="openDetail('security_d')"><span class="step-badge">6</span><span class="node-icon">🛡️</span><span class="node-label">Security Agent</span><span class="node-tag">audit + fix</span></div>
+      </div>
+      <div class="arrow-down"><svg width="24" height="36"><line x1="12" y1="0" x2="12" y2="30" class="flow-arrow"/><polygon points="6,28 12,36 18,28" class="flow-arrow-head"/></svg></div>
+      <div class="flow-label">SHARED INFRASTRUCTURE</div>
+      <div class="h-flow">
+        <div class="flow-node" data-node="memory_d" onclick="openDetail('memory_d')"><span class="step-badge">7</span><span class="node-badge badge-oss">OSS</span><span class="node-icon">💾</span><span class="node-label">Shared Memory</span><span class="node-tag">Redis state store</span></div>
+        <div class="arrow-right"><svg width="36" height="24"><line x1="0" y1="12" x2="30" y2="12" class="flow-arrow"/><polygon points="28,6 36,12 28,18" class="flow-arrow-head"/></svg></div>
+        <div class="flow-node" data-node="litellm" onclick="openDetail('litellm')"><span class="step-badge">8</span><span class="node-badge badge-oss">OSS</span><span class="node-icon">🔀</span><span class="node-label">LiteLLM</span><span class="node-tag">provider router</span></div>
+      </div>
+      <div class="arrow-down"><svg width="24" height="36"><line x1="12" y1="0" x2="12" y2="30" class="flow-arrow"/><polygon points="6,28 12,36 18,28" class="flow-arrow-head"/></svg></div>
+      <div class="flow-label">LLM BACKENDS</div>
+      <div class="branch-container">
+        <div class="flow-node" data-node="bedrock_d" onclick="openDetail('bedrock_d')"><span class="node-badge badge-aws">AWS</span><span class="node-icon">☁️</span><span class="node-label">Bedrock</span><span class="node-tag">Claude 3 Sonnet</span></div>
+        <div class="flow-node" data-node="aoai" onclick="openDetail('aoai')"><span class="node-badge badge-azure">Azure</span><span class="node-icon">☁️</span><span class="node-label">Azure OpenAI</span><span class="node-tag">GPT-4</span></div>
+        <div class="flow-node" data-node="vertex" onclick="openDetail('vertex')"><span class="node-badge badge-gcp">GCP</span><span class="node-icon">☁️</span><span class="node-label">Vertex AI</span><span class="node-tag">Gemini Pro</span></div>
+      </div>
+      <div class="arrow-down"><svg width="24" height="36"><line x1="12" y1="0" x2="12" y2="30" class="flow-arrow"/><polygon points="6,28 12,36 18,28" class="flow-arrow-head"/></svg></div>
+      <div class="flow-label">DEPLOYMENT</div>
+      <div class="h-flow">
+        <div class="flow-node" data-node="docker_d" onclick="openDetail('docker_d')"><span class="step-badge">9</span><span class="node-badge badge-oss">OSS</span><span class="node-icon">🐳</span><span class="node-label">Docker Build</span><span class="node-tag">multi-stage image</span></div>
+      </div>
+      <div class="arrow-down"><svg width="24" height="36"><line x1="12" y1="0" x2="12" y2="30" class="flow-arrow"/><polygon points="6,28 12,36 18,28" class="flow-arrow-head"/></svg></div>
+      <div class="branch-container">
+        <div class="flow-node" data-node="ecs" onclick="openDetail('ecs')"><span class="step-badge">10</span><span class="node-badge badge-aws">AWS</span><span class="node-icon">🟠</span><span class="node-label">ECS Fargate</span><span class="node-tag">AWS deploy</span></div>
+        <div class="flow-node" data-node="aks" onclick="openDetail('aks')"><span class="node-badge badge-azure">Azure</span><span class="node-icon">🔵</span><span class="node-label">AKS</span><span class="node-tag">Azure deploy</span></div>
+        <div class="flow-node" data-node="cloudrun" onclick="openDetail('cloudrun')"><span class="node-badge badge-gcp">GCP</span><span class="node-icon">🔴</span><span class="node-label">Cloud Run</span><span class="node-tag">GCP deploy</span></div>
+      </div>
+      <div class="arrow-down"><svg width="24" height="36"><line x1="12" y1="0" x2="12" y2="30" class="flow-arrow"/><polygon points="6,28 12,36 18,28" class="flow-arrow-head"/></svg></div>
+      <div class="h-flow">
+        <div class="flow-node" data-node="otel" onclick="openDetail('otel')"><span class="step-badge">11</span><span class="node-badge badge-oss">OSS</span><span class="node-icon">📊</span><span class="node-label">OpenTelemetry</span><span class="node-tag">traces + metrics</span></div>
+        <div class="arrow-right"><svg width="36" height="24"><line x1="0" y1="12" x2="30" y2="12" class="flow-arrow"/><polygon points="28,6 36,12 28,18" class="flow-arrow-head"/></svg></div>
+        <div class="flow-node" data-node="compare" onclick="openDetail('compare')"><span class="step-badge">12</span><span class="node-icon">⚖️</span><span class="node-label">Provider Compare</span><span class="node-tag">cost + latency + quality</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>Orchestration</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Provider Abstraction</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Multi-Cloud Deploy</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>Observability</div>
+  <div class="legend-item"><div class="legend-dot" style="background:transparent;border:1px dashed var(--accent)"></div>Click any node for details</div>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeDetail()"></div>
+<div class="detail-panel" id="detailPanel">
+  <button class="detail-close" onclick="closeDetail()">&times;</button>
+  <div class="detail-title" id="detailTitle"></div>
+  <div id="detailContent"></div>
+</div>
+
+<div class="page-footer">
+  <span>AgentForge v1.0 &middot; Architecture Diagram &middot; Node 08</span>
+  <a href="../index.html">Return to Curriculum Portal</a>
+</div>
+
+<script>
+// === NODE DETAIL DATA ===
+const nodeData = {
+  "input_d": {
+    "title": "User Request Input",
+    "description": "Any input channel — API, CLI, chat interface, or event trigger. The request enters the LangGraph state machine through the entry point and is routed to the Supervisor node.",
+    "services": [
+      "API Gateway",
+      "CLI",
+      "Chat UI"
+    ],
+    "inputs": [
+      "User text or event payload"
+    ],
+    "outputs": [
+      "Typed AgentState with messages list"
+    ]
+  },
+  "supervisor": {
+    "title": "LangGraph Supervisor Node",
+    "description": "The Supervisor analyzes user intent and routes to the appropriate specialist agent via conditional edges. Uses a lightweight LLM call to classify: research, code, write, or security. Includes a loop guard (max 5 iterations).",
+    "services": [
+      "LangGraph StateGraph"
+    ],
+    "inputs": [
+      "AgentState with messages"
+    ],
+    "outputs": [
+      "Updated state with next_agent decision"
+    ],
+    "code": "graph = StateGraph(AgentState)\ngraph.add_node(\"supervisor\", supervisor_fn)\ngraph.add_conditional_edges(\n  \"supervisor\", route_fn,\n  {\"research\": \"research\",\n   \"code\": \"code\", \"write\": \"write\",\n   \"end\": END})",
+    "pitfall": "Not adding a loop guard causes infinite supervisor-agent cycles. Add max_iterations counter (5) and route to END when exceeded."
+  },
+  "research_d": {
+    "title": "Research Agent",
+    "description": "Specialist agent with RAG retrieval tools. Searches the knowledge base for information, synthesizes findings, and writes them to shared memory for other agents to use.",
+    "services": [
+      "LangChain Tools",
+      "Vector Store"
+    ],
+    "inputs": [
+      "Research query from supervisor"
+    ],
+    "outputs": [
+      "Retrieved information written to shared memory"
+    ]
+  },
+  "code_d": {
+    "title": "Code Agent",
+    "description": "Specialist agent with code generation and file I/O tools. Generates production Python code with type hints and docstrings. Can also review existing code for issues.",
+    "services": [
+      "LangChain Tools"
+    ],
+    "inputs": [
+      "Code specification from supervisor"
+    ],
+    "outputs": [
+      "Generated code with documentation"
+    ]
+  },
+  "writer": {
+    "title": "Writer Agent",
+    "description": "Specialist agent with formatting and content creation tools. Produces structured documents, reports, and marketing copy based on research findings from shared memory.",
+    "services": [
+      "LangChain Tools"
+    ],
+    "inputs": [
+      "Writing brief from supervisor"
+    ],
+    "outputs": [
+      "Formatted document content"
+    ]
+  },
+  "security_d": {
+    "title": "Security Agent (AutoGen)",
+    "description": "Part of an AutoGen group chat with CodeFixer and DeploymentManager. Scans code for vulnerabilities, classifies severity, and coordinates fixes through multi-agent debate.",
+    "services": [
+      "AutoGen GroupChat"
+    ],
+    "inputs": [
+      "Code to audit"
+    ],
+    "outputs": [
+      "Vulnerability findings",
+      "Patched code",
+      "Deployment plan"
+    ],
+    "code": "groupchat = GroupChat(\n  agents=[security_auditor, code_fixer,\n    deployer, human],\n  messages=[], max_round=12)",
+    "pitfall": "AutoGen without max_round spirals into infinite loops. Always set max_round (8-12) with termination condition."
+  },
+  "memory_d": {
+    "title": "Shared Memory (Redis)",
+    "description": "Redis-backed shared state store. All agents read/write to a session-scoped hash map with 1-hour TTL. Enables agents to share context, avoid duplicate work, and build on each other's outputs.",
+    "services": [
+      "Redis"
+    ],
+    "inputs": [
+      "Agent writes: key-value data"
+    ],
+    "outputs": [
+      "Cross-agent reads: shared context"
+    ],
+    "code": "class SharedMemory:\n  def write(self, agent_name, key, value):\n    r.hset(f\"{self.prefix}:{agent_name}\",\n      key, json.dumps(value))\n    r.expire(..., 3600)",
+    "pitfall": "In-memory Python dicts break in distributed deployments. Always use an external store (Redis/DynamoDB)."
+  },
+  "litellm": {
+    "title": "LiteLLM Provider Abstraction",
+    "description": "Routes LLM calls to the optimal provider. Supports automatic fallback: Bedrock → Azure OpenAI → Vertex AI. Each provider has independent timeout and retry settings.",
+    "services": [
+      "LiteLLM"
+    ],
+    "inputs": [
+      "LLM request (messages, model preference)"
+    ],
+    "outputs": [
+      "LLM response from best available provider"
+    ],
+    "code": "PROVIDER_CONFIG = {\n  \"primary\": {\"model\": \"bedrock/claude-3-sonnet\",\n    \"timeout\": 30},\n  \"fallback_1\": {\"model\": \"azure/gpt-4\",\n    \"timeout\": 30},\n  \"fallback_2\": {\"model\": \"vertex_ai/gemini-pro\"}\n}",
+    "pitfall": "Not setting per-provider timeouts causes cascading failures. Set 30s timeout on each for fast failover."
+  },
+  "bedrock_d": {
+    "title": "AWS Bedrock Backend",
+    "description": "Claude 3 Sonnet via Amazon Bedrock. Primary provider for most workloads. Best for: complex reasoning, code generation, structured output.",
+    "services": [
+      "Amazon Bedrock"
+    ],
+    "inputs": [
+      "LLM messages"
+    ],
+    "outputs": [
+      "Completion response with usage metrics"
+    ]
+  },
+  "aoai": {
+    "title": "Azure OpenAI Backend",
+    "description": "GPT-4 via Azure OpenAI. First fallback provider. Deployed in Azure regions for latency-sensitive European workloads.",
+    "services": [
+      "Azure OpenAI Service"
+    ],
+    "inputs": [
+      "LLM messages"
+    ],
+    "outputs": [
+      "Completion response"
+    ]
+  },
+  "vertex": {
+    "title": "Vertex AI Backend",
+    "description": "Gemini Pro via Google Vertex AI. Second fallback. Cost-effective for high-volume, lower-complexity tasks.",
+    "services": [
+      "Google Vertex AI"
+    ],
+    "inputs": [
+      "LLM messages"
+    ],
+    "outputs": [
+      "Completion response"
+    ]
+  },
+  "docker_d": {
+    "title": "Docker Multi-Stage Build",
+    "description": "Production Dockerfile with multi-stage build. Builder stage installs dependencies, runtime stage copies only artifacts. Final image under 500MB, runs as non-root user with health check.",
+    "services": [
+      "Docker"
+    ],
+    "inputs": [
+      "Application source code",
+      "requirements.txt"
+    ],
+    "outputs": [
+      "Container image < 500MB"
+    ],
+    "code": "FROM python:3.11-slim AS builder\nCOPY requirements.txt .\nRUN pip install --prefix=/install ...\n\nFROM python:3.11-slim AS runtime\nCOPY --from=builder /install /usr/local\nUSER agentuser",
+    "pitfall": "Single-stage build includes compilers and dev headers, inflating to 2GB+. Always multi-stage."
+  },
+  "ecs": {
+    "title": "ECS Fargate Deployment",
+    "description": "AWS deployment via Terraform module. Fargate serverless containers with auto-scaling. Image pulled from ECR.",
+    "services": [
+      "Amazon ECS",
+      "ECR",
+      "Fargate"
+    ],
+    "inputs": [
+      "Container image SHA"
+    ],
+    "outputs": [
+      "Running service with health check"
+    ]
+  },
+  "aks": {
+    "title": "AKS Deployment",
+    "description": "Azure deployment via Terraform module. Kubernetes pods with HPA auto-scaling. Image pulled from ACR.",
+    "services": [
+      "Azure AKS",
+      "ACR"
+    ],
+    "inputs": [
+      "Container image SHA"
+    ],
+    "outputs": [
+      "Running pods with health check"
+    ]
+  },
+  "cloudrun": {
+    "title": "Cloud Run Deployment",
+    "description": "GCP deployment via Terraform module. Serverless containers with automatic scaling to zero. Image pulled from GCR.",
+    "services": [
+      "Google Cloud Run",
+      "GCR"
+    ],
+    "inputs": [
+      "Container image SHA"
+    ],
+    "outputs": [
+      "Running service with 0-to-N scaling"
+    ]
+  },
+  "otel": {
+    "title": "OpenTelemetry Observability",
+    "description": "Every agent invocation instrumented with OpenTelemetry traces. Tracks: agent name, tool calls, LLM provider, tokens, latency, and cost. Trace context propagated across all agent boundaries.",
+    "services": [
+      "OpenTelemetry",
+      "OTLP Exporter"
+    ],
+    "inputs": [
+      "Agent invocation events"
+    ],
+    "outputs": [
+      "Distributed traces with spans per agent"
+    ],
+    "pitfall": "Tracing only top-level requests misses inter-agent communication. Propagate trace context through shared memory."
+  },
+  "compare": {
+    "title": "Provider Comparison Dashboard",
+    "description": "Unified dashboard comparing all 3 clouds: p50/p95 latency, cost per query, quality scores, success rates. Smart routing uses this data to select the optimal provider per task type.",
+    "services": [
+      "CloudWatch",
+      "Custom metrics"
+    ],
+    "inputs": [
+      "Per-provider performance data"
+    ],
+    "outputs": [
+      "Comparison dashboard",
+      "Smart routing decisions"
+    ],
+    "code": "def smart_route(task_type):\n  for provider in [\"bedrock\",\"azure\",\"vertex\"]:\n    if p95 < 5000 and success > 0.99:\n      return provider\n  return \"bedrock\"",
+    "pitfall": "Routing purely on cost ignores quality differences. Include quality score alongside cost and latency."
+  }
+};
+
+// === OPEN DETAIL PANEL ===
+function openDetail(nodeId) {
+  const data = nodeData[nodeId];
+  if (!data) return;
+
+  document.querySelectorAll('.flow-node').forEach(n => n.classList.remove('active'));
+  const el = document.querySelector('[data-node="' + nodeId + '"]');
+  if (el) el.classList.add('active');
+
+  document.getElementById('detailTitle').textContent = data.title;
+  let html = '';
+
+  if (data.description) {
+    html += '<div class="detail-section"><h4>What This Does</h4><p>' + data.description + '</p></div>';
+  }
+  if (data.services && data.services.length) {
+    html += '<div class="detail-section"><h4>AWS / Cloud Services</h4><ul class="detail-list">' +
+      data.services.map(s => '<li>' + s + '</li>').join('') + '</ul></div>';
+  }
+  if (data.inputs && data.inputs.length) {
+    html += '<div class="detail-section"><h4>Inputs</h4><ul class="detail-list">' +
+      data.inputs.map(s => '<li>' + s + '</li>').join('') + '</ul></div>';
+  }
+  if (data.outputs && data.outputs.length) {
+    html += '<div class="detail-section"><h4>Outputs</h4><ul class="detail-list">' +
+      data.outputs.map(s => '<li>' + s + '</li>').join('') + '</ul></div>';
+  }
+  if (data.code) {
+    html += '<div class="detail-section"><h4>Key Code Pattern</h4><div class="detail-code">' + data.code + '</div></div>';
+  }
+  if (data.pitfall) {
+    html += '<div class="detail-section"><h4 style="color:var(--gold)">\u26A0 Common Pitfall</h4><p style="color:rgba(217,155,30,.8)">' + data.pitfall + '</p></div>';
+  }
+
+  document.getElementById('detailContent').innerHTML = html;
+  document.getElementById('detailPanel').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+}
+
+// === CLOSE DETAIL PANEL ===
+function closeDetail() {
+  document.getElementById('detailPanel').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+  document.querySelectorAll('.flow-node').forEach(n => n.classList.remove('active'));
+}
+
+// === KEYBOARD ===
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
+
+// === AUTO-PULSE first node ===
+setTimeout(() => {
+  const first = document.querySelector('.flow-node');
+  if (first) first.classList.add('pulse');
+  setTimeout(() => { if (first) first.classList.remove('pulse'); }, 6000);
+}, 1000);
+</script>
+</body>
+</html>

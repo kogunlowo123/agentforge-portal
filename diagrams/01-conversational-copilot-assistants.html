@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>AgentForge — Conversational & Copilot Assistants Architecture</title>
+<style>
+:root{--ink:#0b0c0b;--paper:#f5f2eb;--paper2:#ede9df;--rule:#c8c2b5;--rule2:#9e9788;--accent:#c8420a;--accent2:#e8720c;--green:#16a34a;--blue:#0078d4;--gold:#b8860b;--mono:'Courier New',monospace;--display:system-ui,-apple-system,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--paper);font-family:var(--mono);font-size:13px;line-height:1.6;min-height:100vh;overflow-x:hidden}
+
+/* === HEADER === */
+.page-header{padding:32px 48px 24px;border-bottom:2px solid var(--accent);display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.back-link{font-size:11px;color:var(--accent);text-decoration:none;border:1px solid rgba(200,66,10,.4);padding:4px 12px;border-radius:2px;transition:all .15s;letter-spacing:.04em}
+.back-link:hover{background:var(--accent);color:#fff}
+.page-num{font-size:48px;font-weight:700;color:var(--accent);line-height:1;letter-spacing:-.02em;font-family:var(--display)}
+.page-title-group{flex:1}
+.page-title{font-size:24px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--paper);font-family:var(--display)}
+.page-subtitle{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;letter-spacing:.05em}
+
+/* === SERVICES ROW === */
+.services{padding:16px 48px;display:flex;flex-wrap:wrap;gap:6px;border-bottom:1px solid rgba(255,255,255,.08)}
+.svc-tag{font-size:9px;padding:3px 8px;border-radius:2px;letter-spacing:.04em;font-weight:600}
+.svc-aws{background:rgba(232,114,12,.15);color:#f4a054;border:1px solid rgba(232,114,12,.3)}
+.svc-azure{background:rgba(0,120,212,.12);color:#5ba3e6;border:1px solid rgba(0,120,212,.3)}
+.svc-gcp{background:rgba(26,115,232,.12);color:#6db3f8;border:1px solid rgba(26,115,232,.3)}
+.svc-oss{background:rgba(22,163,74,.12);color:#4ade80;border:1px solid rgba(22,163,74,.3)}
+
+/* === FLOW DIAGRAM CANVAS === */
+.diagram-canvas{padding:48px;min-height:520px;position:relative;display:flex;justify-content:center;align-items:center}
+.flow-container{position:relative;width:100%;max-width:1100px}
+
+/* === FLOW NODES === */
+.flow-row{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:0;position:relative}
+.flow-node{position:relative;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:16px 20px;min-width:160px;text-align:center;cursor:pointer;transition:all .25s ease;z-index:2}
+.flow-node:hover{background:rgba(200,66,10,.12);border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,66,10,.15)}
+.flow-node.active{background:rgba(200,66,10,.18);border-color:var(--accent);box-shadow:0 0 20px rgba(200,66,10,.2)}
+.node-icon{font-size:24px;margin-bottom:6px;display:block}
+.node-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--paper)}
+.node-tag{font-size:8px;letter-spacing:.08em;color:var(--accent);margin-top:3px;text-transform:uppercase}
+.node-badge{position:absolute;top:-8px;right:-8px;font-size:8px;padding:2px 6px;border-radius:8px;font-weight:700;letter-spacing:.05em}
+.badge-aws{background:var(--accent2);color:#fff}
+.badge-azure{background:var(--blue);color:#fff}
+.badge-gcp{background:#1a73e8;color:#fff}
+.badge-oss{background:var(--green);color:#fff}
+.badge-core{background:var(--accent);color:#fff}
+
+/* === ARROWS === */
+.arrow-down{display:flex;justify-content:center;margin:0;padding:8px 0;position:relative;z-index:1}
+.arrow-down svg{display:block}
+.arrow-right{display:flex;align-items:center;padding:0 4px;z-index:1}
+.arrow-right svg{display:block}
+
+/* Animated dash */
+@keyframes dashFlow{from{stroke-dashoffset:20}to{stroke-dashoffset:0}}
+.flow-arrow{stroke:var(--accent);stroke-width:2;fill:none;stroke-dasharray:6,4;animation:dashFlow .8s linear infinite}
+.flow-arrow-head{fill:var(--accent)}
+
+/* === HORIZONTAL FLOW === */
+.h-flow{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap}
+
+/* === VERTICAL FLOW === */
+.v-flow{display:flex;flex-direction:column;align-items:center;gap:0}
+
+/* === BRANCH === */
+.branch-container{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-top:0}
+.branch-node{flex:1;min-width:140px;max-width:200px}
+
+/* === DETAIL PANEL === */
+.detail-panel{position:fixed;top:0;right:-480px;width:480px;height:100vh;background:var(--ink);border-left:2px solid var(--accent);padding:32px;overflow-y:auto;transition:right .35s ease;z-index:100;box-shadow:-8px 0 32px rgba(0,0,0,.5)}
+.detail-panel.open{right:0}
+.detail-close{position:absolute;top:16px;right:16px;width:32px;height:32px;background:none;border:1px solid rgba(255,255,255,.2);color:var(--paper);font-size:18px;cursor:pointer;border-radius:2px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.detail-close:hover{background:var(--accent);border-color:var(--accent)}
+.detail-title{font-size:18px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px;padding-right:40px;font-family:var(--display)}
+.detail-section{margin-bottom:20px}
+.detail-section h4{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:4px}
+.detail-section p{font-size:11px;color:rgba(255,255,255,.7);line-height:1.8}
+.detail-code{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:3px;padding:12px;font-size:10px;line-height:1.7;color:rgba(255,255,255,.7);overflow-x:auto;margin-top:8px;white-space:pre}
+.detail-list{list-style:none;padding:0}
+.detail-list li{font-size:10px;color:rgba(255,255,255,.6);line-height:2;padding-left:14px;position:relative}
+.detail-list li::before{content:'\25B6';position:absolute;left:0;color:var(--accent);font-size:7px;top:1px}
+
+/* === OVERLAY === */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;opacity:0;pointer-events:none;transition:opacity .3s}
+.overlay.open{opacity:1;pointer-events:auto}
+
+/* === LEGEND === */
+.legend{padding:16px 48px 32px;display:flex;gap:24px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.06)}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:9px;color:rgba(255,255,255,.4);letter-spacing:.04em}
+.legend-dot{width:10px;height:10px;border-radius:2px}
+
+/* === DATA FLOW LABELS === */
+.flow-label{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);text-align:center;padding:2px 0}
+
+/* === FOOTER === */
+.page-footer{padding:20px 48px;border-top:2px solid var(--accent);font-size:9px;color:rgba(255,255,255,.3);display:flex;justify-content:space-between;letter-spacing:.06em}
+.page-footer a{color:var(--accent);text-decoration:none}
+
+/* === RESPONSIVE === */
+@media(max-width:768px){
+  .page-header{padding:20px 24px}
+  .diagram-canvas{padding:24px 16px}
+  .services{padding:12px 24px}
+  .h-flow{flex-direction:column}
+  .branch-container{flex-direction:column;align-items:center}
+  .detail-panel{width:100%;right:-100%}
+  .legend{padding:12px 24px}
+  .page-footer{padding:16px 24px;flex-direction:column;gap:8px}
+}
+
+/* === PULSE ANIMATION === */
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(200,66,10,.3)}50%{box-shadow:0 0 0 8px rgba(200,66,10,0)}}
+.flow-node.pulse{animation:pulse 2s ease infinite}
+
+/* === STEP INDICATOR === */
+.step-badge{position:absolute;top:-10px;left:-10px;width:22px;height:22px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:3}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <a class="back-link" href="../index.html">&larr; Back to Portal</a>
+  <div class="page-num">01</div>
+  <div class="page-title-group">
+    <div class="page-title">Conversational & Copilot Assistants</div>
+    <div class="page-subtitle">Enterprise knowledge assistants and workflow copilots — NLU to omnichannel delivery</div>
+  </div>
+</div>
+
+<div class="services">
+  <span class="svc-tag svc-aws">Amazon Lex</span>
+  <span class="svc-tag svc-aws">Amazon Q Business</span>
+  <span class="svc-tag svc-aws">Amazon Connect</span>
+  <span class="svc-tag svc-aws">DynamoDB</span>
+  <span class="svc-tag svc-aws">Bedrock Claude</span>
+  <span class="svc-tag svc-aws">Comprehend</span>
+  <span class="svc-tag svc-azure">Azure AI Bot Service</span>
+  <span class="svc-tag svc-gcp">Dialogflow CX</span>
+</div>
+
+<div class="diagram-canvas">
+  <div class="flow-container">
+    
+    <div class="v-flow">
+      <div class="h-flow">
+        <div class="flow-node" data-node="user" onclick="openDetail('user')"><span class="step-badge">1</span><span class="node-icon">👤</span><span class="node-label">User Query</span><span class="node-tag">multi-channel input</span></div>
+      </div>
+      <div class="arrow-down"><svg width="24" height="36"><line x1="12" y1="0" x2="12" y2="30" class="flow-arrow"/><polygon points="6,28 12,36 18,28" class="flow-arrow-head"/></svg></div>
+      <div class="flow-label">NLU PROCESSING</div>
+      <div class="h-flow">
+        <div class="flow-node" data-node="nlu" onclick="openDetail('nlu')"><span class="step-badge">2</span><span class="node-badge badge-aws">AWS</span><span class="node-icon">🧠</span><span class="node-label">Intent Classification</span><span class="node-tag">Amazon Lex / Dialogflow</span></div>
+        <div class="arrow-right"><svg width="36" height="24"><line x1="0" y1="12" x2="30" y2="12" class="flow-arrow"/><polygon points="28,6 36,12 28,18" class="flow-arrow-head"/></svg></div>
+        <div class="flow-node" data-node="slots" onclick="openDetail('slots')"><span class="step-badge">3</span><span class="node-icon">🎯</span><span class="node-label">Slot Extraction</span><span class="node-tag">custom slot types</span></div>
+      </div>
+      <div class="arrow-down"><svg width="24" height="36"><line x1="12" y1="0" x2="12" y2="30" class="flow-arrow"/><polygon points="6,28 12,36 18,28" class="flow-arrow-head"/></svg></div>
+      <div class="flow-label">ORCHESTRATION</div>
+      <div class="h-flow">
+        <div class="flow-node" data-node="router" onclick="openDetail('router')"><span class="step-badge">4</span><span class="node-badge badge-aws">AWS</span><span class="node-icon">⚡</span><span class="node-label">Lambda Router</span><span class="node-tag">intent dispatch</span></div>
+        <div class="arrow-right"><svg width="36" height="24"><line x1="0" y1="12" x2="30" y2="12" class="flow-arrow"/><polygon points="28,6 36,12 28,18" class="flow-arrow-head"/></svg></div>
+        <div class="flow-node" data-node="session" onclick="openDetail('session')"><span class="step-badge">5</span><span class="node-badge badge-aws">AWS</span><span class="node-icon">💾</span><span class="node-label">Session Store</span><span class="node-tag">DynamoDB ring buffer</span></div>
+      </div>
+      <div class="arrow-down"><svg width="24" height="36"><line x1="12" y1="0" x2="12" y2="30" class="flow-arrow"/><polygon points="6,28 12,36 18,28" class="flow-arrow-head"/></svg></div>
+      <div class="flow-label">INTELLIGENCE</div>
+      <div class="h-flow">
+        <div class="flow-node" data-node="rag" onclick="openDetail('rag')"><span class="step-badge">6</span><span class="node-badge badge-aws">AWS</span><span class="node-icon">📚</span><span class="node-label">RAG Retrieval</span><span class="node-tag">OpenSearch + Titan Embed</span></div>
+        <div class="arrow-right"><svg width="36" height="24"><line x1="0" y1="12" x2="30" y2="12" class="flow-arrow"/><polygon points="28,6 36,12 28,18" class="flow-arrow-head"/></svg></div>
+        <div class="flow-node" data-node="llm" onclick="openDetail('llm')"><span class="step-badge">7</span><span class="node-badge badge-aws">AWS</span><span class="node-icon">✨</span><span class="node-label">LLM Generation</span><span class="node-tag">Bedrock Claude 3</span></div>
+        <div class="arrow-right"><svg width="36" height="24"><line x1="0" y1="12" x2="30" y2="12" class="flow-arrow"/><polygon points="28,6 36,12 28,18" class="flow-arrow-head"/></svg></div>
+        <div class="flow-node" data-node="sentiment" onclick="openDetail('sentiment')"><span class="step-badge">8</span><span class="node-badge badge-aws">AWS</span><span class="node-icon">📊</span><span class="node-label">Sentiment Check</span><span class="node-tag">Comprehend</span></div>
+      </div>
+      <div class="arrow-down"><svg width="24" height="36"><line x1="12" y1="0" x2="12" y2="30" class="flow-arrow"/><polygon points="6,28 12,36 18,28" class="flow-arrow-head"/></svg></div>
+      <div class="flow-label">SAFETY & DELIVERY</div>
+      <div class="h-flow">
+        <div class="flow-node" data-node="guardrail" onclick="openDetail('guardrail')"><span class="step-badge">9</span><span class="node-badge badge-aws">AWS</span><span class="node-icon">🛡️</span><span class="node-label">Guardrails</span><span class="node-tag">content + PII filter</span></div>
+      </div>
+      <div class="arrow-down"><svg width="24" height="36"><line x1="12" y1="0" x2="12" y2="30" class="flow-arrow"/><polygon points="6,28 12,36 18,28" class="flow-arrow-head"/></svg></div>
+      <div class="branch-container">
+        <div class="flow-node" data-node="slack" onclick="openDetail('slack')"><span class="node-icon">💬</span><span class="node-label">Slack</span><span class="node-tag">channel adapter</span></div>
+        <div class="flow-node" data-node="web" onclick="openDetail('web')"><span class="node-icon">🌐</span><span class="node-label">Web Widget</span><span class="node-tag">channel adapter</span></div>
+        <div class="flow-node" data-node="connect" onclick="openDetail('connect')"><span class="node-badge badge-aws">AWS</span><span class="node-icon">📞</span><span class="node-label">Amazon Connect</span><span class="node-tag">voice + hand-off</span></div>
+        <div class="flow-node" data-node="escalation" onclick="openDetail('escalation')"><span class="node-icon">🚨</span><span class="node-label">Human Agent</span><span class="node-tag">escalation path</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--accent2)"></div>AWS Service</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Azure Service</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#1a73e8"></div>GCP Service</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>Core Flow</div>
+  <div class="legend-item"><div class="legend-dot" style="background:transparent;border:1px dashed var(--accent)"></div>Click any node for details</div>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeDetail()"></div>
+<div class="detail-panel" id="detailPanel">
+  <button class="detail-close" onclick="closeDetail()">&times;</button>
+  <div class="detail-title" id="detailTitle"></div>
+  <div id="detailContent"></div>
+</div>
+
+<div class="page-footer">
+  <span>AgentForge v1.0 &middot; Architecture Diagram &middot; Node 01</span>
+  <a href="../index.html">Return to Curriculum Portal</a>
+</div>
+
+<script>
+// === NODE DETAIL DATA ===
+const nodeData = {
+  "user": {
+    "title": "User Query Input",
+    "description": "Users interact through multiple channels — Slack, web widgets, voice via Amazon Connect. The adapter layer normalizes every channel-specific envelope into a canonical {text, userId, channel} format before routing to Lex.",
+    "services": [
+      "Amazon Connect",
+      "Slack API",
+      "Web Widget SDK"
+    ],
+    "inputs": [
+      "Text from Slack event",
+      "Voice transcription from Connect",
+      "JSON from web widget"
+    ],
+    "outputs": [
+      "Canonical message: {text, userId, channel, timestamp}"
+    ],
+    "code": "CHANNEL_SCHEMAS = {\n  \"slack\": lambda e: {\"text\": e[\"event\"][\"text\"],\n    \"userId\": e[\"event\"][\"user\"]},\n  \"connect\": lambda e: {\"text\": e[\"Details\"]\n    [\"ContactData\"][\"Attributes\"][\"query\"]},\n}",
+    "pitfall": "Amazon Connect passes user messages as Contact Attributes, not in the event body. The attribute key must be set in the contact flow."
+  },
+  "nlu": {
+    "title": "Intent Classification (NLU)",
+    "description": "Amazon Lex V2 processes the user query, classifies it into one of your predefined intents, and extracts slot values. The confidence threshold is set at 0.70 — below this, Lex returns FALLBACK_INTENT for graceful degradation.",
+    "services": [
+      "Amazon Lex V2",
+      "Dialogflow CX (GCP)",
+      "Azure AI Bot Service"
+    ],
+    "inputs": [
+      "Canonical user message",
+      "Session attributes from DynamoDB"
+    ],
+    "outputs": [
+      "Intent name",
+      "Slot values map",
+      "NLU confidence score (0.0-1.0)"
+    ],
+    "code": "aws lexv2-models create-bot \\\n  --bot-name \"AgentForgeCopilot\" \\\n  --idle-session-ttl-in-seconds 900\n\n# Confidence threshold:\n--nlu-intent-confidence-threshold 0.70",
+    "pitfall": "Forgetting idle-session-ttl-in-seconds defaults sessions to 5 minutes, breaking multi-turn conversations."
+  },
+  "slots": {
+    "title": "Custom Slot Extraction",
+    "description": "Custom slot types extract domain-specific entities (ProductType, RegionCode, PlanTier). Defined as JSON files for version control rather than console-only configuration. Each slot type supports synonyms for natural language variation.",
+    "services": [
+      "Amazon Lex V2 Slot Types"
+    ],
+    "inputs": [
+      "User utterance from Lex NLU"
+    ],
+    "outputs": [
+      "Resolved slot values with original text",
+      "Slot confidence scores"
+    ],
+    "code": "{\n  \"slotTypeName\": \"ProductType\",\n  \"slotTypeValues\": [\n    {\"sampleValue\": {\"value\": \"enterprise\"},\n     \"synonyms\": [{\"value\": \"business\"}]}\n  ]\n}",
+    "pitfall": "Using AMAZON.AlphaNumeric for business entities loses synonym resolution. Always define custom slot types."
+  },
+  "router": {
+    "title": "Lambda Intent Router",
+    "description": "The Lambda function receives the Lex event and dispatches to intent-specific handlers. Each handler is a focused function under 50 lines. The router also records every turn to DynamoDB for session persistence.",
+    "services": [
+      "AWS Lambda",
+      "Amazon DynamoDB"
+    ],
+    "inputs": [
+      "Lex V2 event with intent, slots, sessionId, confidence"
+    ],
+    "outputs": [
+      "Lex V2 response object with dialogAction and messages"
+    ],
+    "code": "INTENT_HANDLERS = {\n  \"CheckOrderStatus\": handle_order,\n  \"ActivateRoaming\": handle_roaming,\n  \"FallbackIntent\": handle_escalation,\n}\nhandler = INTENT_HANDLERS.get(\n  intent, handle_escalation)\nreturn handler(slots, session_id, event)",
+    "pitfall": "Returning a plain string from Lambda breaks Lex. Response MUST be a structured Lex V2 object with sessionState and messages."
+  },
+  "session": {
+    "title": "DynamoDB Session Store",
+    "description": "Multi-turn conversation state is stored in DynamoDB using a ring-buffer pattern — last 10 turns per session. This history is injected into every Bedrock prompt as conversation context, enabling the bot to reference earlier turns.",
+    "services": [
+      "Amazon DynamoDB"
+    ],
+    "inputs": [
+      "sessionId, timestamp, intent, slots, message content"
+    ],
+    "outputs": [
+      "Chronological conversation history (last 10 turns)"
+    ],
+    "code": "sessions.query(\n  KeyConditionExpression=\"sessionId = :sid\",\n  ScanIndexForward=False,\n  Limit=10\n)",
+    "pitfall": "Using Lex session attributes for memory limits you to 25KB and breaks on long conversations. Always use DynamoDB."
+  },
+  "rag": {
+    "title": "RAG Knowledge Retrieval",
+    "description": "For factual queries, the user message is embedded with Titan Embeddings V2, then searched against an OpenSearch Serverless vector index. Top-5 chunks are retrieved and passed as context to the LLM — never send raw queries without retrieved context.",
+    "services": [
+      "Amazon Bedrock (Titan Embed V2)",
+      "OpenSearch Serverless"
+    ],
+    "inputs": [
+      "User query text"
+    ],
+    "outputs": [
+      "Top-5 relevant document chunks with source metadata"
+    ],
+    "code": "embed_resp = bedrock.invoke_model(\n  modelId=\"amazon.titan-embed-text-v2:0\",\n  body=json.dumps({\"inputText\": query})\n)\nvector = json.loads(resp[\"body\"].read())[\"embedding\"]",
+    "pitfall": "Embedding at query time with no caching adds 200-400ms per turn. Cache the 100 most common query embeddings in ElastiCache."
+  },
+  "llm": {
+    "title": "Bedrock LLM Generation",
+    "description": "Claude 3 Sonnet generates the response using: system prompt + retrieved RAG chunks + conversation history + current user query. The system prompt constrains the model to answer only from provided context.",
+    "services": [
+      "Amazon Bedrock (Claude 3 Sonnet)"
+    ],
+    "inputs": [
+      "System prompt",
+      "RAG context chunks",
+      "Conversation history",
+      "Current user query"
+    ],
+    "outputs": [
+      "Generated response text",
+      "Token usage (input/output)"
+    ],
+    "code": "messages = history + [{\"role\": \"user\",\n  \"content\": f\"Context:\\n{context}\\n\\n\"\n  f\"Question: {user_msg}\"}]\nresp = bedrock.invoke_model(...)",
+    "pitfall": "Not constraining the LLM to retrieved context causes hallucinations in 30%+ of responses."
+  },
+  "sentiment": {
+    "title": "Comprehend Sentiment Analysis",
+    "description": "Every user message is analyzed for sentiment before response generation. Tracks sentiment across turns. If NEGATIVE sentiment persists for 2+ consecutive turns, triggers escalation to human agent.",
+    "services": [
+      "Amazon Comprehend"
+    ],
+    "inputs": [
+      "User message text"
+    ],
+    "outputs": [
+      "Sentiment label (POSITIVE/NEGATIVE/NEUTRAL/MIXED)",
+      "Negative score (0.0-1.0)",
+      "Escalation flag (bool)"
+    ],
+    "code": "resp = comprehend.detect_sentiment(\n  Text=text, LanguageCode=\"en\")\nif score > 0.6 and prev_negative:\n  escalate = True",
+    "pitfall": "Escalating on a single negative turn creates false positives. Always require 2 consecutive negative turns."
+  },
+  "guardrail": {
+    "title": "Bedrock Guardrails",
+    "description": "Every outbound response passes through Bedrock Guardrails — denied topics (legal advice, competitor mentions), PII redaction (emails, phones, names), and content filters (hate, violence). Blocked responses return a safe default message.",
+    "services": [
+      "Amazon Bedrock Guardrails"
+    ],
+    "inputs": [
+      "Generated response text",
+      "User input text"
+    ],
+    "outputs": [
+      "Filtered response or GUARDRAIL_INTERVENED action"
+    ],
+    "code": "topicPolicyConfig={\"topicsConfig\": [\n  {\"name\": \"LegalAdvice\",\n   \"type\": \"DENY\"},\n  {\"name\": \"CompetitorMention\",\n   \"type\": \"DENY\"}\n]}",
+    "pitfall": "Guardrails add 80-150ms latency per call. Measure p99 in load tests before enabling in production."
+  },
+  "slack": {
+    "title": "Slack Channel",
+    "description": "Slack integration via Event API. Requires OAuth scopes: app_mentions:read, chat:write, im:history. The adapter normalizes Slack event format into the canonical message structure.",
+    "services": [
+      "Slack API"
+    ],
+    "inputs": [
+      "Normalized bot response"
+    ],
+    "outputs": [
+      "Slack message in user channel"
+    ]
+  },
+  "web": {
+    "title": "Web Widget Channel",
+    "description": "Embeddable web widget using the Lex Web UI. Communicates via WebSocket for real-time responses. Supports rich cards, buttons, and file attachments.",
+    "services": [
+      "Lex Web UI",
+      "API Gateway WebSocket"
+    ],
+    "inputs": [
+      "Bot response"
+    ],
+    "outputs": [
+      "Rendered web widget message"
+    ]
+  },
+  "connect": {
+    "title": "Amazon Connect Voice",
+    "description": "Voice channel via Amazon Connect. Neural TTS (Joanna) converts bot responses to speech. Contact flows route calls and enable transfer to human agents with full context preserved.",
+    "services": [
+      "Amazon Connect",
+      "Amazon Polly"
+    ],
+    "inputs": [
+      "Bot response text"
+    ],
+    "outputs": [
+      "Neural TTS voice response",
+      "Contact transfer with context"
+    ]
+  },
+  "escalation": {
+    "title": "Human Agent Escalation",
+    "description": "When sentiment-based or confidence-based escalation triggers, the bot creates an Amazon Connect Task with the full conversation summary pre-loaded. The human agent sees the context before connecting.",
+    "services": [
+      "Amazon Connect Tasks"
+    ],
+    "inputs": [
+      "Session summary",
+      "Escalation reason",
+      "Conversation history"
+    ],
+    "outputs": [
+      "Connect task with bot_summary attribute",
+      "PagerDuty/Slack notification"
+    ],
+    "code": "connect.start_task_contact(\n  Description=summary,\n  Attributes={\n    \"bot_summary\": summary[:4000]\n  })",
+    "pitfall": "Connect tasks have a 4000-char attribute limit. Store full transcripts in DynamoDB, pass only summaries."
+  }
+};
+
+// === OPEN DETAIL PANEL ===
+function openDetail(nodeId) {
+  const data = nodeData[nodeId];
+  if (!data) return;
+
+  document.querySelectorAll('.flow-node').forEach(n => n.classList.remove('active'));
+  const el = document.querySelector('[data-node="' + nodeId + '"]');
+  if (el) el.classList.add('active');
+
+  document.getElementById('detailTitle').textContent = data.title;
+  let html = '';
+
+  if (data.description) {
+    html += '<div class="detail-section"><h4>What This Does</h4><p>' + data.description + '</p></div>';
+  }
+  if (data.services && data.services.length) {
+    html += '<div class="detail-section"><h4>AWS / Cloud Services</h4><ul class="detail-list">' +
+      data.services.map(s => '<li>' + s + '</li>').join('') + '</ul></div>';
+  }
+  if (data.inputs && data.inputs.length) {
+    html += '<div class="detail-section"><h4>Inputs</h4><ul class="detail-list">' +
+      data.inputs.map(s => '<li>' + s + '</li>').join('') + '</ul></div>';
+  }
+  if (data.outputs && data.outputs.length) {
+    html += '<div class="detail-section"><h4>Outputs</h4><ul class="detail-list">' +
+      data.outputs.map(s => '<li>' + s + '</li>').join('') + '</ul></div>';
+  }
+  if (data.code) {
+    html += '<div class="detail-section"><h4>Key Code Pattern</h4><div class="detail-code">' + data.code + '</div></div>';
+  }
+  if (data.pitfall) {
+    html += '<div class="detail-section"><h4 style="color:var(--gold)">\u26A0 Common Pitfall</h4><p style="color:rgba(217,155,30,.8)">' + data.pitfall + '</p></div>';
+  }
+
+  document.getElementById('detailContent').innerHTML = html;
+  document.getElementById('detailPanel').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+}
+
+// === CLOSE DETAIL PANEL ===
+function closeDetail() {
+  document.getElementById('detailPanel').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+  document.querySelectorAll('.flow-node').forEach(n => n.classList.remove('active'));
+}
+
+// === KEYBOARD ===
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
+
+// === AUTO-PULSE first node ===
+setTimeout(() => {
+  const first = document.querySelector('.flow-node');
+  if (first) first.classList.add('pulse');
+  setTimeout(() => { if (first) first.classList.remove('pulse'); }, 6000);
+}, 1000);
+</script>
+</body>
+</html>

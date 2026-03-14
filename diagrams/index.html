@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>AgentForge — Architecture Diagrams Index</title>
+<style>
+:root{--ink:#0b0c0b;--paper:#f5f2eb;--accent:#c8420a;--accent2:#e8720c;--mono:'Courier New',monospace;--display:system-ui,-apple-system,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ink);color:var(--paper);font-family:var(--mono);font-size:13px;min-height:100vh}
+.header{padding:40px 48px 32px;border-bottom:2px solid var(--accent)}
+.back-link{font-size:11px;color:var(--accent);text-decoration:none;border:1px solid rgba(200,66,10,.4);padding:4px 12px;border-radius:2px;transition:all .15s;letter-spacing:.04em;display:inline-block;margin-bottom:20px}
+.back-link:hover{background:var(--accent);color:#fff}
+.title{font-size:36px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-family:var(--display)}
+.title em{font-style:normal;color:var(--accent)}
+.subtitle{font-size:12px;color:rgba(255,255,255,.4);margin-top:6px;letter-spacing:.05em}
+.grid{padding:32px 48px 48px;display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.card{border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:24px;cursor:pointer;transition:all .25s;text-decoration:none;color:var(--paper);display:block;position:relative;overflow:hidden}
+.card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 12px 32px rgba(200,66,10,.12)}
+.card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--accent);opacity:0;transition:opacity .25s}
+.card:hover::before{opacity:1}
+.card-num{font-size:48px;font-weight:700;color:rgba(200,66,10,.2);font-family:var(--display);line-height:1;margin-bottom:8px}
+.card-title{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;font-family:var(--display)}
+.card-desc{font-size:10px;color:rgba(255,255,255,.5);line-height:1.7}
+.card-services{margin-top:10px;display:flex;flex-wrap:wrap;gap:4px}
+.card-svc{font-size:8px;padding:2px 6px;border-radius:2px;letter-spacing:.04em;background:rgba(255,255,255,.06);color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.08)}
+.footer{padding:20px 48px;border-top:2px solid var(--accent);font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.06em}
+.footer a{color:var(--accent);text-decoration:none}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a class="back-link" href="../index.html">&larr; Back to Curriculum Portal</a>
+  <div class="title">ARCHITECTURE <em>DIAGRAMS</em></div>
+  <div class="subtitle">Interactive flow diagrams for all 8 AgentForge agent categories &middot; Click any node for implementation details</div>
+</div>
+
+<div class="grid">
+  <a class="card" href="01-conversational-copilot-assistants.html">
+    <div class="card-num">01</div>
+    <div class="card-title">Conversational & Copilot Assistants</div>
+    <div class="card-desc">NLU intent classification, RAG retrieval, multi-turn session management, omnichannel delivery with sentiment-based escalation.</div>
+    <div class="card-services">
+      <span class="card-svc">Amazon Lex</span><span class="card-svc">Bedrock</span><span class="card-svc">Connect</span><span class="card-svc">Comprehend</span>
+    </div>
+  </a>
+  <a class="card" href="02-autonomous-task-agents.html">
+    <div class="card-num">02</div>
+    <div class="card-title">Autonomous Task Agents</div>
+    <div class="card-desc">ReAct loop with tool-calling Action Groups, Knowledge Base grounding, guardrails, and retry/plan-revision middleware.</div>
+    <div class="card-services">
+      <span class="card-svc">Bedrock Agents</span><span class="card-svc">Lambda</span><span class="card-svc">EventBridge</span><span class="card-svc">AgentCore</span>
+    </div>
+  </a>
+  <a class="card" href="03-developer-devops-agents.html">
+    <div class="card-num">03</div>
+    <div class="card-title">Developer & DevOps Agents</div>
+    <div class="card-desc">AI code review on PRs, Terraform drift detection + remediation, incident-to-patch automation with blast radius estimation.</div>
+    <div class="card-services">
+      <span class="card-svc">GitHub Actions</span><span class="card-svc">Terraform</span><span class="card-svc">Security Hub</span><span class="card-svc">Step Functions</span>
+    </div>
+  </a>
+  <a class="card" href="04-data-analytics-agents.html">
+    <div class="card-num">04</div>
+    <div class="card-title">Data & Analytics Agents</div>
+    <div class="card-desc">Hybrid RAG with vector + BM25 fusion, cross-encoder re-ranking, NL-to-SQL via Athena, confidence gating, and RAGAS evaluation.</div>
+    <div class="card-services">
+      <span class="card-svc">OpenSearch</span><span class="card-svc">Titan Embed</span><span class="card-svc">Athena</span><span class="card-svc">Glue Catalog</span>
+    </div>
+  </a>
+  <a class="card" href="05-security-governance-agents.html">
+    <div class="card-num">05</div>
+    <div class="card-title">Security & Governance Agents</div>
+    <div class="card-desc">GuardDuty triage, MITRE ATT&CK classification, auto-containment for HIGH severity, IAM least-privilege analysis, SOC 2 compliance sweeps.</div>
+    <div class="card-services">
+      <span class="card-svc">GuardDuty</span><span class="card-svc">CloudTrail</span><span class="card-svc">SSM</span><span class="card-svc">Config</span>
+    </div>
+  </a>
+  <a class="card" href="06-industry-specific-agents.html">
+    <div class="card-num">06</div>
+    <div class="card-title">Industry-Specific Agents</div>
+    <div class="card-desc">Healthcare NER + PHI redaction, FHIR R4 mapping, retail personalization, supply chain exception monitoring, HIPAA compliance.</div>
+    <div class="card-services">
+      <span class="card-svc">Comprehend Medical</span><span class="card-svc">HealthLake</span><span class="card-svc">Personalize</span><span class="card-svc">SNOMED</span>
+    </div>
+  </a>
+  <a class="card" href="07-infrastructure-orchestration-agents.html">
+    <div class="card-num">07</div>
+    <div class="card-title">Infrastructure & Orchestration Agents</div>
+    <div class="card-desc">Auto-healing with anomaly detection, FinOps rightsizing, EKS OOMKilled patching, chaos engineering with FIS, post-incident reports.</div>
+    <div class="card-services">
+      <span class="card-svc">CloudWatch</span><span class="card-svc">SSM Automation</span><span class="card-svc">EKS</span><span class="card-svc">FIS</span>
+    </div>
+  </a>
+  <a class="card" href="08-cross-cloud-agnostic-patterns.html">
+    <div class="card-num">08</div>
+    <div class="card-title">Cross-Cloud & Agnostic Patterns</div>
+    <div class="card-desc">LangGraph supervisor routing, CrewAI teams, AutoGen group chat, LiteLLM provider fallback, Docker multi-stage to ECS/AKS/Cloud Run.</div>
+    <div class="card-services">
+      <span class="card-svc">LangGraph</span><span class="card-svc">CrewAI</span><span class="card-svc">AutoGen</span><span class="card-svc">LiteLLM</span><span class="card-svc">Docker</span>
+    </div>
+  </a>
+</div>
+
+<div class="footer">
+  <span>AgentForge v1.0 &middot; Architecture Diagrams &middot; MIT License &middot; <a href="../index.html">Return to Portal</a></span>
+</div>
+
+</body>
+</html>
