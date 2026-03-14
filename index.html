@@ -166,6 +166,19 @@ main{background:var(--paper);overflow-x:hidden}
 .bp-item-title{font-size:10px;font-weight:500;letter-spacing:.04em;color:var(--ink)}
 .bp-item-body{font-size:9px;color:var(--rule2);line-height:1.5;margin-top:3px}
 
+/* ── Impl steps & ref docs inside panels ── */
+.impl-steps{margin-top:16px;font-size:10px;color:var(--rule2);line-height:1.8}
+.impl-steps .step{display:flex;gap:8px;margin-bottom:4px}
+.impl-steps .step-num{font-family:var(--display);font-size:16px;color:var(--accent);min-width:20px;line-height:1.6}
+.ref-links{margin-top:16px;font-size:10px;line-height:2}
+.ref-links a{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(200,66,10,.2);transition:border-color .15s}
+.ref-links a:hover{border-color:var(--accent)}
+.ref-links .ref-tag{font-size:8px;letter-spacing:.06em;padding:1px 4px;border-radius:1px;margin-right:4px;font-weight:600}
+.ref-tag-aws{background:rgba(232,114,12,.12);color:#9a4a06}
+.ref-tag-azure{background:rgba(0,120,212,.1);color:#004f8e}
+.ref-tag-gcp{background:rgba(26,115,232,.1);color:#0c4da1}
+.ref-tag-oss{background:rgba(22,163,74,.1);color:#0a5c29}
+
 /* ── Footer ── */
 footer{background:var(--ink);color:rgba(255,255,255,.35);padding:32px 56px;font-size:9px;letter-spacing:.08em;border-top:3px solid var(--accent);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
 footer strong{color:rgba(255,255,255,.7)}
@@ -341,6 +354,27 @@ aside::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2p
         <div>→ Fallback escalation to human agents</div>
         <div>→ Tone guardrails + content filtering</div>
       </div>
+      <div class="panel-heading" style="margin-top:16px">Implementation Steps</div>
+      <div class="impl-steps">
+        <div class="step"><span class="step-num">1</span> Create a Lex V2 bot with custom intents and slot types for your FAQ domain</div>
+        <div class="step"><span class="step-num">2</span> Build a Lambda fulfillment function that queries your knowledge base (FAISS/OpenSearch)</div>
+        <div class="step"><span class="step-num">3</span> Add DynamoDB session table for multi-turn conversation state persistence</div>
+        <div class="step"><span class="step-num">4</span> Wire Bedrock LLM for response generation with retrieved context (RAG pattern)</div>
+        <div class="step"><span class="step-num">5</span> Integrate Amazon Comprehend sentiment analysis for tone monitoring</div>
+        <div class="step"><span class="step-num">6</span> Deploy to channels: Amazon Connect (voice), Slack, or web widget</div>
+        <div class="step"><span class="step-num">7</span> Add escalation logic: route to human when sentiment &lt; -0.6 or confidence &lt; 0.4</div>
+      </div>
+      <div class="panel-heading" style="margin-top:16px">Reference Docs &amp; Node Links</div>
+      <div class="ref-links">
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/lexv2/latest/dg/what-is.html" target="_blank">Amazon Lex V2 Developer Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/amazonq/latest/qbusiness-ug/what-is.html" target="_blank">Amazon Q Business User Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/connect/latest/adminguide/what-is-amazon-connect.html" target="_blank">Amazon Connect Admin Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/comprehend/latest/dg/what-is.html" target="_blank">Amazon Comprehend — Sentiment Analysis</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/microsoft-copilot-studio/" target="_blank">Microsoft Copilot Studio Docs</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/bot-service/" target="_blank">Azure AI Bot Service Docs</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/dialogflow/cx/docs" target="_blank">Dialogflow CX Documentation</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://workspace.google.com/solutions/ai/" target="_blank">Google Workspace Gemini</a></div>
+      </div>
     </div>
     <div class="panel-right">
       <div class="panel-heading">Lab Exercises</div>
@@ -407,6 +441,29 @@ aside::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2p
         <div>→ Knowledge Bases for grounded context</div>
         <div>→ Step Functions for deterministic branching</div>
         <div>→ Guardrails for output validation</div>
+      </div>
+      <div class="panel-heading" style="margin-top:16px">Implementation Steps</div>
+      <div class="impl-steps">
+        <div class="step"><span class="step-num">1</span> Define Action Groups with OpenAPI schemas — each tool gets typed input/output</div>
+        <div class="step"><span class="step-num">2</span> Create Lambda functions for each Action Group (get_weather, create_event, send_email)</div>
+        <div class="step"><span class="step-num">3</span> Configure a Bedrock Agent with Claude/Titan as the foundation model</div>
+        <div class="step"><span class="step-num">4</span> Attach a Knowledge Base (S3 + OpenSearch) for grounded context retrieval</div>
+        <div class="step"><span class="step-num">5</span> Add Guardrails — content filters, denied topics, and PII redaction</div>
+        <div class="step"><span class="step-num">6</span> Wire S3 event → EventBridge → Lambda → Agent for event-driven invocation</div>
+        <div class="step"><span class="step-num">7</span> Deploy with AgentCore: <code>agentcore configure</code> → <code>agentcore launch</code> → <code>agentcore invoke</code></div>
+        <div class="step"><span class="step-num">8</span> Add retry logic and plan-revision middleware for self-healing on tool failures</div>
+      </div>
+      <div class="panel-heading" style="margin-top:16px">Reference Docs &amp; Node Links</div>
+      <div class="ref-links">
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html" target="_blank">Amazon Bedrock Agents User Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html" target="_blank">Amazon Bedrock AgentCore Developer Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html" target="_blank">AWS Step Functions Developer Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/lambda/latest/dg/welcome.html" target="_blank">AWS Lambda Developer Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails.html" target="_blank">Bedrock Guardrails Configuration</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/ai-services/agents/" target="_blank">Azure AI Agent Service Docs</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/logic-apps/" target="_blank">Azure Logic Apps Documentation</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/vertex-ai/generative-ai/docs/agent-builder/overview" target="_blank">Vertex AI Agent Builder</a></div>
+        <div><span class="ref-tag ref-tag-oss">REF</span> <a href="https://arxiv.org/abs/2210.03629" target="_blank">ReAct Paper (Yao et al. 2022)</a></div>
       </div>
     </div>
     <div class="panel-right">
@@ -476,6 +533,29 @@ aside::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2p
         <div>→ Security scanning + auto-patch PRs</div>
         <div>→ Rollback guards and change approvals</div>
       </div>
+      <div class="panel-heading" style="margin-top:16px">Implementation Steps</div>
+      <div class="impl-steps">
+        <div class="step"><span class="step-num">1</span> Create a GitHub Actions workflow triggered on <code>pull_request</code> events</div>
+        <div class="step"><span class="step-num">2</span> Extract PR diff using GitHub API and send to Bedrock (Claude) for code review</div>
+        <div class="step"><span class="step-num">3</span> Parse LLM response for severity-tagged issues (CRITICAL/HIGH/MEDIUM/LOW)</div>
+        <div class="step"><span class="step-num">4</span> Post inline review comments via GitHub API with file path and line numbers</div>
+        <div class="step"><span class="step-num">5</span> Add scheduled <code>terraform plan</code> — parse drift JSON and route to Bedrock agent</div>
+        <div class="step"><span class="step-num">6</span> Agent generates corrective <code>terraform apply</code> commands + Jira approval ticket</div>
+        <div class="step"><span class="step-num">7</span> Wire Security Hub findings → agent → auto-generated remediation Terraform snippets</div>
+        <div class="step"><span class="step-num">8</span> Add rollback guards: human approval gate before any production apply</div>
+      </div>
+      <div class="panel-heading" style="margin-top:16px">Reference Docs &amp; Node Links</div>
+      <div class="ref-links">
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/what-is.html" target="_blank">Amazon Q Developer User Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html" target="_blank">AWS Security Hub User Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-automation.html" target="_blank">AWS Systems Manager Automation</a></div>
+        <div><span class="ref-tag ref-tag-oss">OSS</span> <a href="https://docs.github.com/en/actions" target="_blank">GitHub Actions Documentation</a></div>
+        <div><span class="ref-tag ref-tag-oss">OSS</span> <a href="https://docs.github.com/en/copilot" target="_blank">GitHub Copilot Documentation</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/devops/" target="_blank">Azure DevOps Documentation</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/gemini/docs/codeassist/overview" target="_blank">Gemini Code Assist Docs</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/build/docs" target="_blank">Google Cloud Build Docs</a></div>
+        <div><span class="ref-tag ref-tag-oss">IaC</span> <a href="https://developer.hashicorp.com/terraform/docs" target="_blank">Terraform Documentation</a></div>
+      </div>
     </div>
     <div class="panel-right">
       <div class="panel-heading">Lab Exercises</div>
@@ -543,6 +623,31 @@ aside::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2p
         <div>→ NL-to-SQL with schema injection</div>
         <div>→ Result confidence scoring</div>
         <div>→ Citation and source attribution</div>
+      </div>
+      <div class="panel-heading" style="margin-top:16px">Implementation Steps</div>
+      <div class="impl-steps">
+        <div class="step"><span class="step-num">1</span> Upload documents to S3 — PDFs, CSVs, or HTML. Chunk at 512 tokens with 50-token overlap</div>
+        <div class="step"><span class="step-num">2</span> Create Bedrock Knowledge Base backed by OpenSearch Serverless vector collection</div>
+        <div class="step"><span class="step-num">3</span> Generate embeddings using Titan Embeddings V2 or Cohere Embed models</div>
+        <div class="step"><span class="step-num">4</span> Build Lambda handler: NL query → embed → vector search → top-K retrieval</div>
+        <div class="step"><span class="step-num">5</span> Add cross-encoder re-ranker (ms-marco-MiniLM) to filter low-relevance chunks</div>
+        <div class="step"><span class="step-num">6</span> For NL-to-SQL: inject Glue Data Catalog schema into prompt, execute via Athena</div>
+        <div class="step"><span class="step-num">7</span> Implement confidence gating — only answer if top chunk score &gt; 0.72</div>
+        <div class="step"><span class="step-num">8</span> Add RAGAS evaluation pipeline: faithfulness, answer relevance, context precision</div>
+      </div>
+      <div class="panel-heading" style="margin-top:16px">Reference Docs &amp; Node Links</div>
+      <div class="ref-links">
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base.html" target="_blank">Bedrock Knowledge Bases Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless.html" target="_blank">OpenSearch Serverless Docs</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/athena/latest/ug/what-is.html" target="_blank">Amazon Athena User Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/glue/latest/dg/catalog-and-crawler.html" target="_blank">AWS Glue Data Catalog</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/quicksight/latest/user/quicksight-q-ask.html" target="_blank">QuickSight Q — Natural Language Queries</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/fabric/" target="_blank">Microsoft Fabric Documentation</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/power-bi/" target="_blank">Power BI Documentation</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/bigquery/docs" target="_blank">BigQuery Documentation</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/looker/docs" target="_blank">Looker Documentation</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/generative-ai-app-builder/docs/introduction" target="_blank">Vertex AI Search Docs</a></div>
+        <div><span class="ref-tag ref-tag-oss">EVAL</span> <a href="https://docs.ragas.io/" target="_blank">RAGAS — RAG Evaluation Framework</a></div>
       </div>
     </div>
     <div class="panel-right">
@@ -612,6 +717,32 @@ aside::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2p
         <div>→ Automated containment playbooks</div>
         <div>→ Compliance gap analysis (SOC2 / ISO 27001)</div>
       </div>
+      <div class="panel-heading" style="margin-top:16px">Implementation Steps</div>
+      <div class="impl-steps">
+        <div class="step"><span class="step-num">1</span> Enable GuardDuty in all regions — subscribe findings to EventBridge rule</div>
+        <div class="step"><span class="step-num">2</span> Create Lambda enrichment function: pull CloudTrail logs for the affected resource</div>
+        <div class="step"><span class="step-num">3</span> Send enriched finding + logs to Bedrock agent for MITRE ATT&amp;CK TTP classification</div>
+        <div class="step"><span class="step-num">4</span> Agent generates plain-English narrative: what happened, blast radius, recommended action</div>
+        <div class="step"><span class="step-num">5</span> For HIGH severity (≥7.0): auto-isolate via SSM — remove from SG, capture memory snapshot</div>
+        <div class="step"><span class="step-num">6</span> Post incident report to Security Hub, Slack, and auto-create Jira ticket</div>
+        <div class="step"><span class="step-num">7</span> Build IAM policy analyser: parse overly-permissive policies → agent suggests least-privilege</div>
+        <div class="step"><span class="step-num">8</span> Add daily SOC 2 compliance sweep using Config Rules + agent-generated delta reports</div>
+      </div>
+      <div class="panel-heading" style="margin-top:16px">Reference Docs &amp; Node Links</div>
+      <div class="ref-links">
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html" target="_blank">Amazon GuardDuty User Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html" target="_blank">AWS Security Hub User Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html" target="_blank">AWS CloudTrail User Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html" target="_blank">Amazon EventBridge User Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html" target="_blank">AWS Config Developer Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/macie/latest/userguide/what-is-macie.html" target="_blank">Amazon Macie — PII Detection</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/defender-for-cloud/" target="_blank">Microsoft Defender for Cloud</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/sentinel/" target="_blank">Microsoft Sentinel (SIEM)</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/entra/identity/" target="_blank">Microsoft Entra ID Documentation</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/security-command-center/docs" target="_blank">Google Cloud Security Command Center</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/chronicle/docs" target="_blank">Google Chronicle SIEM Docs</a></div>
+        <div><span class="ref-tag ref-tag-oss">REF</span> <a href="https://attack.mitre.org/" target="_blank">MITRE ATT&amp;CK Framework</a></div>
+      </div>
     </div>
     <div class="panel-right">
       <div class="panel-heading">Lab Exercises</div>
@@ -678,6 +809,30 @@ aside::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2p
         <div>→ Personalisation with behavioral signals</div>
         <div>→ Audit trails for regulated industries</div>
       </div>
+      <div class="panel-heading" style="margin-top:16px">Implementation Steps</div>
+      <div class="impl-steps">
+        <div class="step"><span class="step-num">1</span> Ingest clinical notes — use Amazon Comprehend Medical for medical NER extraction</div>
+        <div class="step"><span class="step-num">2</span> Detect and redact all PHI categories (names, dates, SSNs) using Macie + custom regex</div>
+        <div class="step"><span class="step-num">3</span> Map extracted entities to FHIR R4 resources and store in HealthLake</div>
+        <div class="step"><span class="step-num">4</span> Send redacted context to Bedrock with SNOMED/ICD-10 ontology grounding</div>
+        <div class="step"><span class="step-num">5</span> For retail: train Amazon Personalize model on clickstream → wire to Bedrock for narratives</div>
+        <div class="step"><span class="step-num">6</span> For supply chain: build event stream monitor → agent classifies disruption severity</div>
+        <div class="step"><span class="step-num">7</span> Implement HIPAA audit logging — CloudTrail + custom DynamoDB access log for every query</div>
+        <div class="step"><span class="step-num">8</span> Validate against HIPAA Security Rule §164.312 checklist and generate compliance report</div>
+      </div>
+      <div class="panel-heading" style="margin-top:16px">Reference Docs &amp; Node Links</div>
+      <div class="ref-links">
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/healthlake/latest/devguide/what-is-amazon-healthlake.html" target="_blank">Amazon HealthLake Developer Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/comprehend-medical/latest/dev/comprehendmedical-welcome.html" target="_blank">Amazon Comprehend Medical Docs</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/personalize/latest/dg/what-is-personalize.html" target="_blank">Amazon Personalize Developer Guide</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/ai-services/language/text-analytics-for-health/" target="_blank">Azure AI Health Text Analytics</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/dynamics365/copilot/" target="_blank">Dynamics 365 Copilot Docs</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/healthcare-api/docs" target="_blank">Google Cloud Healthcare API</a></div>
+        <div><span class="ref-tag ref-tag-oss">STD</span> <a href="https://hl7.org/fhir/R4/" target="_blank">HL7 FHIR R4 Specification</a></div>
+        <div><span class="ref-tag ref-tag-oss">STD</span> <a href="https://www.snomed.org/what-is-snomed-ct" target="_blank">SNOMED CT Reference</a></div>
+        <div><span class="ref-tag ref-tag-oss">STD</span> <a href="https://docs.smarthealthit.org/" target="_blank">SMART on FHIR Documentation</a></div>
+        <div><span class="ref-tag ref-tag-oss">REG</span> <a href="https://www.hhs.gov/hipaa/for-professionals/security/index.html" target="_blank">HIPAA Security Rule Reference</a></div>
+      </div>
     </div>
     <div class="panel-right">
       <div class="panel-heading">Lab Exercises</div>
@@ -743,6 +898,30 @@ aside::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2p
         <div>→ Cost anomaly detection + rightsizing</div>
         <div>→ Reserved Instance purchasing agent</div>
         <div>→ Cross-cloud cost normalization</div>
+      </div>
+      <div class="panel-heading" style="margin-top:16px">Implementation Steps</div>
+      <div class="impl-steps">
+        <div class="step"><span class="step-num">1</span> Set up CloudWatch alarms for key infrastructure metrics (CPU, memory, error rate)</div>
+        <div class="step"><span class="step-num">2</span> Create EventBridge rule to route alarm payloads to a Lambda handler</div>
+        <div class="step"><span class="step-num">3</span> Lambda passes alarm context to Bedrock agent → agent selects SSM Automation runbook</div>
+        <div class="step"><span class="step-num">4</span> For FinOps: pull Cost Explorer API daily → agent identifies &gt;20% MoM spikes</div>
+        <div class="step"><span class="step-num">5</span> Agent generates rightsizing recommendations with estimated monthly savings</div>
+        <div class="step"><span class="step-num">6</span> For EKS: monitor OOMKilled via Prometheus webhook → agent patches deployment memory limits</div>
+        <div class="step"><span class="step-num">7</span> Add chaos engineering: AWS FIS injects faults → companion agent auto-recovers</div>
+        <div class="step"><span class="step-num">8</span> Generate post-incident reports automatically and push to Confluence/wiki</div>
+      </div>
+      <div class="panel-heading" style="margin-top:16px">Reference Docs &amp; Node Links</div>
+      <div class="ref-links">
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html" target="_blank">Amazon CloudWatch User Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html" target="_blank">Amazon EventBridge User Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-automation.html" target="_blank">SSM Automation Runbooks</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html" target="_blank">AWS Cost Explorer API</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html" target="_blank">Amazon EKS User Guide</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/fis/latest/userguide/what-is.html" target="_blank">AWS Fault Injection Service (FIS)</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/automanage/" target="_blank">Azure Automanage Docs</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-overview" target="_blank">GKE Autopilot / AutoOps</a></div>
+        <div><span class="ref-tag ref-tag-oss">OSS</span> <a href="https://prometheus.io/docs/introduction/overview/" target="_blank">Prometheus Documentation</a></div>
+        <div><span class="ref-tag ref-tag-oss">OSS</span> <a href="https://prometheus.io/docs/alerting/latest/alertmanager/" target="_blank">AlertManager Documentation</a></div>
       </div>
     </div>
     <div class="panel-right">
@@ -812,6 +991,32 @@ aside::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2p
         <div>→ AutoGen conversation patterns</div>
         <div>→ Provider abstraction via LiteLLM</div>
         <div>→ Containerised deployment on any cloud</div>
+      </div>
+      <div class="panel-heading" style="margin-top:16px">Implementation Steps</div>
+      <div class="impl-steps">
+        <div class="step"><span class="step-num">1</span> Build a LangGraph <code>StateGraph</code> with Supervisor node + conditional routing edges</div>
+        <div class="step"><span class="step-num">2</span> Define specialist sub-agents: ResearchAgent (RAG), CodeAgent, WriterAgent</div>
+        <div class="step"><span class="step-num">3</span> Use LiteLLM as provider abstraction — swap between Bedrock, Azure OpenAI, Vertex AI</div>
+        <div class="step"><span class="step-num">4</span> Create a CrewAI team: assign roles, goals, and backstories to 4 agents</div>
+        <div class="step"><span class="step-num">5</span> Build an AutoGen group chat with SecurityAuditor + CodeFixer + HumanProxy agents</div>
+        <div class="step"><span class="step-num">6</span> Containerise with Docker — write Dockerfile with multi-stage build for production</div>
+        <div class="step"><span class="step-num">7</span> Deploy to 3 clouds: ECS (AWS), AKS (Azure), Cloud Run (GCP) using Terraform modules</div>
+        <div class="step"><span class="step-num">8</span> Route test prompts across providers — compare latency, cost, and quality metrics</div>
+      </div>
+      <div class="panel-heading" style="margin-top:16px">Reference Docs &amp; Node Links</div>
+      <div class="ref-links">
+        <div><span class="ref-tag ref-tag-oss">OSS</span> <a href="https://langchain-ai.github.io/langgraph/" target="_blank">LangGraph Documentation</a></div>
+        <div><span class="ref-tag ref-tag-oss">OSS</span> <a href="https://python.langchain.com/" target="_blank">LangChain Python Documentation</a></div>
+        <div><span class="ref-tag ref-tag-oss">OSS</span> <a href="https://docs.crewai.com/" target="_blank">CrewAI Documentation</a></div>
+        <div><span class="ref-tag ref-tag-oss">OSS</span> <a href="https://microsoft.github.io/autogen/" target="_blank">AutoGen Documentation</a></div>
+        <div><span class="ref-tag ref-tag-oss">OSS</span> <a href="https://docs.litellm.ai/" target="_blank">LiteLLM — Provider Abstraction</a></div>
+        <div><span class="ref-tag ref-tag-oss">OSS</span> <a href="https://www.sbert.net/" target="_blank">Sentence Transformers (SBERT)</a></div>
+        <div><span class="ref-tag ref-tag-oss">OSS</span> <a href="https://faiss.ai/" target="_blank">FAISS — Vector Similarity Search</a></div>
+        <div><span class="ref-tag ref-tag-aws">AWS</span> <a href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html" target="_blank">Amazon ECS Developer Guide</a></div>
+        <div><span class="ref-tag ref-tag-azure">Azure</span> <a href="https://learn.microsoft.com/en-us/azure/aks/" target="_blank">Azure Kubernetes Service (AKS)</a></div>
+        <div><span class="ref-tag ref-tag-gcp">GCP</span> <a href="https://cloud.google.com/run/docs" target="_blank">Google Cloud Run Documentation</a></div>
+        <div><span class="ref-tag ref-tag-oss">IaC</span> <a href="https://docs.docker.com/" target="_blank">Docker Documentation</a></div>
+        <div><span class="ref-tag ref-tag-oss">IaC</span> <a href="https://developer.hashicorp.com/terraform/docs" target="_blank">Terraform Documentation</a></div>
       </div>
     </div>
     <div class="panel-right">
