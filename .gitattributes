@@ -1,0 +1,36 @@
+# Auto detect text files and perform LF normalization
+* text=auto eol=lf
+
+# Web files
+*.html text diff=html
+*.css text diff=css
+*.js text
+*.json text
+
+# Documents
+*.md text diff=markdown
+*.txt text
+*.csv text
+*.xml text
+*.yaml text
+*.yml text
+
+# Graphics
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg text
+*.webp binary
+
+# Fonts
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+
+# Archives
+*.zip binary
+*.gz binary
+*.tar binary
