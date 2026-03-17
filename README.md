@@ -1,3 +1,7 @@
+![Python](https://img.shields.io/badge/Python-3.11+-blue?logo=python&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green)
+![GitHub release](https://img.shields.io/github/v/release/kogunlowo123/agentforge-portal)
+
 # Amazon Bedrock AgentCore Crash Course
 
 A hands-on, production-focused introduction to **Amazon Bedrock AgentCore** — a fully managed service for building, deploying, and operating intelligent AI agents at scale. This repository walks you through three progressive examples that demonstrate how to build AI agents leveraging language models, RAG (Retrieval-Augmented Generation), tool use, and persistent memory management.
